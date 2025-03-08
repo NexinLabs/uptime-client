@@ -2,8 +2,8 @@
 import { lazy } from 'react'
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 
-import LandingPage from '@/pages/info/LandingPage'
-const Dashboard = lazy(async () => import('@/pages/util/dashboard'))
+const LandingPage  = lazy(async () => import('@/pages/info/LandingPage'))
+const Dashboard = lazy(async () => import('@/pages/util/Dashboard'))
 
 function App() {
 

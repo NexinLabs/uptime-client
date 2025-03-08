@@ -73,19 +73,22 @@ const Dashboard = () => {
                     <div className={`container p-4 ${!isMobile ? 'grid grid-cols-2' : 'flex flex-col '} w-full  gap-4`}>
 
                         <div className={`content rounded-lg overflow-hidden order-${isMobile ? 2 : 1}`}>
-                            <div className="flex  min-w-full gap-4 m-4">
+                            <div className="flex  min-w-full gap-2 mx-4">
                                 <Skeleton className="h-8 w-[300px]" />
                                 <Skeleton className="h-8 w-[150px]" />
                             </div>
+
+
                             {/* table content */}
                             <div className={`tab`}>
-                                <div className="h-full p-4 mt-4 rounded *:my-2">
+                                <div className="h-full p-4 rounded *:my-2">
                                     {[1, 2, 3, 4, 5].map((item, index) => (
-                                        <Skeleton key={item + index} className={`${isMobile ? 'h-24' : 'h-12'} w-full`} />
+                                        <Skeleton key={item + index} className={`${isMobile ? 'h-24' : 'h-14'} w-full`} />
                                     ))}
                                 </div>
                             </div>
                         </div>
+
                         {/* stats tab */}
                         <div className={`container order-${isMobile ? 1 : 2} rounded-lg overflow-hidden`}>
                             <div className="stats-tab block *:my-2">
@@ -94,9 +97,11 @@ const Dashboard = () => {
                                     <Skeleton className="h-48 w-[50%]" />
                                 </div>
                                 <Skeleton className="h-24 w-full" />
-                                <Skeleton className="h-12 w-full" />
+                                <Skeleton className="h-14 w-full" />
                             </div>
+                            {isMobile && (<div className="divider h-2 w-[100%] bg-gray-400 my-4 rounded"></div>)}
                         </div>
+                        
                     </div>
 
                 )}
