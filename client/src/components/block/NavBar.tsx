@@ -1,5 +1,6 @@
 // import React from "react";
 import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
 
 
 const NavBar = () =>{
@@ -19,9 +20,7 @@ const NavBar = () =>{
                             <a href="#features" className="text-gray-700 hover:text-indigo-600 transition-colors">Features</a>
                             <a href="#pricing" className="text-gray-700 hover:text-indigo-600 transition-colors">Pricing</a>
                             <a href="#contact" className="text-gray-700 hover:text-indigo-600 transition-colors">Contact</a>
-                            <button className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
-                                Sign In
-                            </button>
+                            <Button>Sign in</Button>
                         </div>
                     </div>
                 </div>
