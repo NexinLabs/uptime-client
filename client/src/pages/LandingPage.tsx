@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { NavBar } from '../components/components';
 import { motion } from 'framer-motion';
 
@@ -7,7 +7,7 @@ const LandingPage = () => {
         <div className="min-h-screen bg-white">
             {/* Navigation Bar */}
             <NavBar/>
-            
+
             {/* Hero Section */}
             <div className="container mx-auto px-6 py-16">
                 <motion.div
