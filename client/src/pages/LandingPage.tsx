@@ -1,5 +1,5 @@
 
-import { NavBar } from '../components/components';
+import { NavBar } from '@/components/components';
 import { motion } from 'framer-motion';
 
 const LandingPage = () => {
