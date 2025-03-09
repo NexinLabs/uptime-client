@@ -11,7 +11,7 @@ const NavBar = () => {
                     <div className="flex items-center">
                         <Link to={"/"}>
                             <h2 className="text-2xl font-bold text-indigo-600 hover:text-indigo-500 cursor-pointer">
-                                UptimeMonitor
+                                UptimeClient
                             </h2>
                         </Link>
                     </div>
