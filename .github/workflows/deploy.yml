@@ -1,0 +1,46 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+  schedule:
+   - cron: '0 */6 * * *'
+    
+permissions:
+  contents: read
+  
+env:
+  MONGO_URI : ${{secrets.MONGO_URI}}
+
+  
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Nodejs
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20'
+
+
+    # - name: Setup CF
+    #   run: |
+    #     curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb && sudo dpkg -i cloudflared.deb && sudo cloudflared service install ${{ secrets.CF_KEY }}
+
+
+    - name: Install Dependencies
+      run:  npm install typescript -g && npm install
+      working-directory: ./server
+
+    - name: Setup Deploy
+      run: |
+        NODE_ENV=production
+        npm run dep
+      #chmod +x ./run.sh && sudo ./run.sh
+      # pm2 start server/app.js -i 4
+      working-directory: ./server
+
+ 
