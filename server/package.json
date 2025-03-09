@@ -5,7 +5,8 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "dev" : "nodemon src/index.ts",
-    "build": "tsc -p ."
+    "build": "tsc -p .",
+    "dep" : "tsc -p . && node dist/index.js"
   },
   "keywords": [],
   "author": "https://github.com/hunter87ff",
