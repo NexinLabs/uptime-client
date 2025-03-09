@@ -4,9 +4,9 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node src/index.ts",
-    "dev" : "nodemon src/index.ts",
+    "dev": "nodemon src/index.ts",
     "build": "tsc -p .",
-    "dep" : "tsc -p . && node dist/index.js"
+    "dep": "tsc -p . && node dist/index.js"
   },
   "keywords": [],
   "author": "https://github.com/hunter87ff",
@@ -19,6 +19,10 @@
     "typescript": "^5.8.2"
   },
   "dependencies": {
-    "express": "^4.21.2"
+    "axios": "^1.8.2",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongodb": "^6.14.2",
+    "nodemailer": "^6.10.0"
   }
 }
