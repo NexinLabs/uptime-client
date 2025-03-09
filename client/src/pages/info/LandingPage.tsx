@@ -1,4 +1,4 @@
-
+import { Link } from 'react-router-dom';
 import { NavBar, Footer } from '@/components/components';
 import { motion } from 'framer-motion';
 
@@ -6,7 +6,7 @@ const LandingPage = () => {
     return (
         <div className="min-h-screen bg-white">
             {/* Navigation Bar */}
-            <NavBar/>
+            <NavBar />
 
             {/* Hero Section */}
             <div className="container mx-auto px-6 py-16">
@@ -17,20 +17,21 @@ const LandingPage = () => {
                     className="text-center"
                 >
                     <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6">
-                        Monitor Your Website <span className="text-indigo-600">24/7</span>
+                        Monitor Your Service <span className="text-indigo-600">24/7</span>
                     </h1>
                     <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
                         Get real-time insights into your website's performance and uptime with our advanced monitoring solution
                     </p>
-
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="bg-indigo-600 text-white font-semibold px-8 py-3 rounded-lg 
-                     shadow-lg hover:bg-indigo-700 transition-all duration-300"
-                    >
-                        Start Monitoring
-                    </motion.button>
+                    <Link to="/dashboard">
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="bg-indigo-600 text-white font-semibold px-8 py-3 rounded-lg 
+                     shadow-lg hover:bg-indigo-700 transition-all duration-300 cursor-pointer"
+                        >
+                            Start Monitoring
+                        </motion.button>
+                    </Link>
                 </motion.div>
 
                 {/* Features Section */}
@@ -85,7 +86,7 @@ const LandingPage = () => {
             </div>
 
             {/* Footer */}
-            <Footer/>
+            <Footer />
         </div>
     );
 };
