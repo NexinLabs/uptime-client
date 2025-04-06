@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { DashboardTabsConfig } from "@/config";
 
 import TopLabel from "@/components/ui/labels/TopLabel";
-import CommingSoon from "@/components/ui/labels/CommingSoon";
 
 import { Menu, Target, ListRestart, Logs, Activity, Clock, Globe, AlertTriangle } from "lucide-react";
 // import { Skeleton } from "@/components/ui/skeleton";
@@ -147,7 +146,7 @@ const Dashboard = () => {
                 {tabs[activeTab].id == DashboardTabsConfig.Restarter.id && (
                     <div className="p-6">
                         <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700">
-                            <CommingSoon/>
+                        <TopLabel text="Comming Soon" variant="default"/>
                             <div className="p-6">
                                 <h2 className="text-xl font-semibold mb-4">Service Restarter</h2>
                                 <p className="text-gray-400">Configure automatic restart rules for your services</p>
