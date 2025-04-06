@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { DashboardTabsConfig } from "@/config";
+
+import TopLabel from "@/components/ui/labels/TopLabel";
+import CommingSoon from "@/components/ui/labels/CommingSoon";
+
 import { Menu, Target, ListRestart, Logs, Activity, Clock, Globe, AlertTriangle } from "lucide-react";
 // import { Skeleton } from "@/components/ui/skeleton";
 
@@ -8,19 +13,19 @@ const Dashboard = () => {
     const params = useParams();
     const tabs = [
         {
-            id: 3462346,
-            name: "Monitoring",
+            id: DashboardTabsConfig.Monitoring.id,
+            name: DashboardTabsConfig.Monitoring.name,
             icon: Target
         },
         {
-            id: 3462347,
-            name: "Restarter",
+            id: DashboardTabsConfig.Restarter.id,
+            name: DashboardTabsConfig.Restarter.name,
             icon: ListRestart,
             url: "#"
         },
         {
-            id: 3462348,
-            name: "Server Logs",
+            id: DashboardTabsConfig.ServerLogs.id,
+            name: DashboardTabsConfig.ServerLogs.name,
             icon: Logs
         },
     ];
@@ -65,7 +70,7 @@ const Dashboard = () => {
                     {isMobile && <Menu className="hover:text-gray-400 transition-colors duration-300 cursor-pointer" onClick={() => setIsSidebarOpen(!isSidebarOpen)} />}
                 </div>
 
-                {tabs[activeTab].id == 3462346 && (
+                {tabs[activeTab].id == DashboardTabsConfig.Monitoring.id && (
                     <div className="p-6 space-y-6 ">
                         {/* Overview Cards */}
                         <div id="overview-tabs-container" className="grid grid-cols-2 lg:grid-cols-4 gap-2 ">
@@ -139,9 +144,10 @@ const Dashboard = () => {
                     </div>
                 )}
 
-                {tabs[activeTab].id == 3462347 && (
+                {tabs[activeTab].id == DashboardTabsConfig.Restarter.id && (
                     <div className="p-6">
                         <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700">
+                            <CommingSoon/>
                             <div className="p-6">
                                 <h2 className="text-xl font-semibold mb-4">Service Restarter</h2>
                                 <p className="text-gray-400">Configure automatic restart rules for your services</p>
@@ -150,9 +156,12 @@ const Dashboard = () => {
                     </div>
                 )}
 
-                {tabs[activeTab].id == 3462348 && (
+                {tabs[activeTab].id == DashboardTabsConfig.ServerLogs.id && (
                     <div className="p-6">
                         <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700">
+                        {/* <span className="absolute top-[-15px] backdrop-blur-lg bg-black px-2 ml-6 border-emerald-500 border rounded-lg">Comming Soon</span> */}
+                            {/* <CommingSoon/> */}
+                            <TopLabel text="Comming Soon" variant="default"/>
                             <div className="p-6">
                                 <h2 className="text-xl font-semibold mb-4">Server Logs</h2>
                                 <p className="text-gray-400">View and analyze your server logs</p>
