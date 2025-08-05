@@ -1,5 +1,5 @@
 import { Collection, ObjectId} from "mongodb";
-import {db} from "@/ext/db"
+import {db} from "@/utils/db"
 
 interface UserData {
     _id: ObjectId;

@@ -1,4 +1,4 @@
-import { MONGO_URI, DB_NAME } from "@/ext/config";
+import { MONGO_URI, DB_NAME } from "@/config";
 import { MongoClient} from "mongodb";
 
 
