@@ -1,9 +1,14 @@
-import dotenv from "dotenv";
-dotenv.config();
 
-export const PORT = Number(process.env.PORT) || 8080;
-export const MONGO_URI : string = process.env.MONGO_URI || "";
-export const DB_NAME : string = process.env.DB_NAME || "";
+
+
+
+
+export const appConfig = {
+    port: Number(process.env.PORT) || 8080,
+    mongoUri: process.env.MONGO_URI || "mongodb://localhost:27017/uptimeclient",
+}
+
+
 
 export const googleCreds = {
     client_id : process.env.GOOGLE_CLIENT_ID,
