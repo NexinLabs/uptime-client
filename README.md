@@ -1,4 +1,5 @@
 # Uptime Client
+
 ## Project Overview
 
 The Uptime Client is a monitoring tool designed to track the availability and performance of websites and services. It helps ensure that your online presence is always up and running, providing real-time alerts and detailed reports on downtime and performance issues.
