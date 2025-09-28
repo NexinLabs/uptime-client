@@ -1,9 +1,9 @@
-import { MONGO_URI, DB_NAME } from "@/config";
+import { appConfig } from "@/config";
 import { MongoClient} from "mongodb";
 
 
-export const client: MongoClient = new MongoClient(MONGO_URI);
-export const db = client.db(DB_NAME);
+export const client: MongoClient = new MongoClient(appConfig.mongoUri);
+export const db = client.db();
 export async function connectToDatabase() {
   await client.connect();
   console.log("Connected to MongoDB");
