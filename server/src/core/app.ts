@@ -1,5 +1,6 @@
 import express from 'express';
 import { appConfig } from '@/config';
+import { connectDB } from '@/utils/db';
 import { initialMiddleware } from '@/middlewares/initial';
 
 
@@ -16,6 +17,7 @@ export default class UptimeClient {
     async start() {
         this.app.use(initialMiddleware);
         this.app.listen(this.port, () => {
+            connectDB();
             console.log(`Server is running on port ${this.port}`);
         });
     }
