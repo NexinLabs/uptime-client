@@ -1,11 +1,16 @@
+import mongoose from "mongoose";
 import { appConfig } from "@/config";
-import { MongoClient} from "mongodb";
 
-
-export const client: MongoClient = new MongoClient(appConfig.mongoUri);
-export const db = client.db();
-export async function connectToDatabase() {
-  await client.connect();
-  console.log("Connected to MongoDB");
+async function connectDB() {
+    try {
+        await mongoose.connect(appConfig.mongoUri, {
+            dbName: 'uptimeclient'
+        });
+        console.log("Connected to MongoDB");
+    } catch (error) {
+        console.error("Error connecting to MongoDB:", error);
+        process.exit(1);
+    }
 }
 
+export { connectDB };
