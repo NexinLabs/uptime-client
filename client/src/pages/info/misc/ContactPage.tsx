@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { NavBar, Footer } from '@/components/components';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Mail, Phone, MapPin, Clock } from 'lucide-react';
+import { Mail, Clock } from 'lucide-react';
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
