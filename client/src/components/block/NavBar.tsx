@@ -30,18 +30,18 @@ const NavBar = () => {
                         </Button>
                     </div>
                     <div className="hidden md:flex items-center space-x-8">
-                        <a href="#features" className="text-gray-700 hover:text-indigo-600 transition-colors">Features</a>
-                        <a href="#pricing" className="text-gray-700 hover:text-indigo-600 transition-colors">Pricing</a>
-                        <a href="#contact" className="text-gray-700 hover:text-indigo-600 transition-colors">Contact</a>
+                        <Link to="/about" className="text-gray-700 hover:text-indigo-600 transition-colors">About</Link>
+                        <Link to="/pricing" className="text-gray-700 hover:text-indigo-600 transition-colors">Pricing</Link>
+                        <Link to="/contact" className="text-gray-700 hover:text-indigo-600 transition-colors">Contact</Link>
                         <Button onClick={()=>navigate("/dashboard")} className='bg-indigo-600 px-4 cursor-pointer'>Monitor</Button>
                     </div>
                 </div>
                 {/* Mobile menu */}
                 <div className={`md:hidden absolute left-0 right-0 top-full bg-white shadow-lg transition-all duration-300 ease-in-out ${isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
                     <div className="flex flex-col space-y-4 px-6 py-4">
-                        <a href="#features" className="text-gray-700 hover:text-indigo-600 transition-colors">Features</a>
-                        <a href="#pricing" className="text-gray-700 hover:text-indigo-600 transition-colors">Pricing</a>
-                        <a href="#contact" className="text-gray-700 hover:text-indigo-600 transition-colors">Contact</a>
+                        <Link to="/about" className="text-gray-700 hover:text-indigo-600 transition-colors">About</Link>
+                        <Link to="/pricing" className="text-gray-700 hover:text-indigo-600 transition-colors">Pricing</Link>
+                        <Link to="/contact" className="text-gray-700 hover:text-indigo-600 transition-colors">Contact</Link>
                         <Button onClick={()=>navigate("/dashboard")} className='bg-indigo-600 w-full justify-center'>Monitor</Button>
                     </div>
                 </div>
