@@ -15,17 +15,16 @@ function Footer() {
                     <div>
                         <h6 className="text-white font-semibold mb-4">Product</h6>
                         <ul className="space-y-2">
-                            <li><a href="#" className="text-gray-400 hover:text-indigo-400 transition-colors">Features</a></li>
+                        <li><Link to="/about" className="text-gray-400 hover:text-indigo-400 transition-colors">About</Link></li>
                             <li><Link to="/pricing" className="text-gray-400 hover:text-indigo-400 transition-colors">Pricing</Link></li>
                             <li><a href="#" className="text-gray-400 hover:text-indigo-400 transition-colors">Documentation</a></li>
                         </ul>
                     </div>
                     <div>
-                        <h6 className="text-white font-semibold mb-4">Company</h6>
+                        <h6 className="text-white font-semibold mb-4">Links</h6>
                         <ul className="space-y-2">
-                            <li><Link to="/about" className="text-gray-400 hover:text-indigo-400 transition-colors">About</Link></li>
-                            <li><a href="#" className="text-gray-400 hover:text-indigo-400 transition-colors">Blog</a></li>
-                            <li><a href="#" className="text-gray-400 hover:text-indigo-400 transition-colors">Careers</a></li>
+                            <li><Link to="/login" className="text-gray-400 hover:text-indigo-400 transition-colors">Log In</Link></li>
+                            <li><Link to="/contact" className="text-gray-400 hover:text-indigo-400 transition-colors">Contact</Link></li>
                         </ul>
                     </div>
                     <div>

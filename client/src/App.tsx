@@ -11,6 +11,7 @@ const ForgotPassPage = lazy(async () => import('@/pages/info/auth/ForgotPassPage
 const AboutPage = lazy(async () => import('@/pages/info/misc/AboutPage'))
 const PricingPage = lazy(async () => import('@/pages/info/misc/PricingPage'))
 const ContactPage = lazy(async () => import('@/pages/info/misc/ContactPage'))
+const NotFoundPage = lazy(async () => import('@/pages/info/misc/NotFoundPage'))
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
             <Route path='/pricing' element={<PricingPage/>}></Route>
             <Route path='/contact' element={<ContactPage/>}></Route>
             <Route path='/dashboard/*' element={<Dashboard/>}></Route>
+            <Route path='*' element={<NotFoundPage/>}></Route>
         </Routes>
     </BrowserRouter>
   )
