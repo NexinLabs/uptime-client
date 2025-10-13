@@ -1,31 +1,40 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-export interface IUser extends Document {
+
+interface IUser extends Document {
     _id: mongoose.Types.ObjectId;
     name: string;
-    avatar: string;
+    email: string;
+    password: string;
+    avatar?: string;
 }
 
-const UserSchema: Schema = new Schema({
+const UserSchema: Schema<IUser> = new Schema({
     name: {
         type: String,
-        required: true,
+        required: [true, "Name is required"],
+        trim: true,
     },
     email: {
         type: String,
-        required: true,
+        required: [true, "Email is required"],
         unique: true,
+        match: [
+            /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/,
+            "Please Provide a valid Email address",
+        ],
     },
     password: {
         type: String,
-        required: true,
+        required: [true, "Password is required"],
     },
     avatar: {
         type: String,
-        required: true,
+        required: false,
     },
 }, {
     timestamps: true,
 });
 
-export const User = mongoose.model<IUser>('User', UserSchema);
+export const User = mongoose.model('User', UserSchema);
+export default User;

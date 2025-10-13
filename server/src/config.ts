@@ -1,23 +1,12 @@
 
-
-
-
-
 export const appConfig = {
     port: Number(process.env.PORT) || 8080,
+    endpoint : process.env.ENDPOINT || "https://api.uptimeclient.tech",
     mongoUri: process.env.MONGO_URI || "mongodb://localhost:27017/uptimeclient",
     JWT_EXPIRATION : Number(process.env.JWT_EXPIRATION || 921600), // 10 days in seconds
     JWT_SECRET : process.env.JWT_SECRET || "your_jwt_secret_key"
 }
 
-
-
-export const googleCreds = {
-    client_id : process.env.GOOGLE_CLIENT_ID,
-    client_secret : process.env.GOOGLE_CLIENT_SECRET,
-    redirect_uris : process.env.GOOGLE_REDIRECT_URIS,
-    token_url : process.env.GOOGLE_TOKEN_URL
-}
 
 
 export const ALLOWED = {
@@ -26,3 +15,20 @@ export const ALLOWED = {
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
 }
+
+export const emailConfig = {
+    creds : 
+    {
+        service: "gmail",
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+            user: process.env.EMAIL_USERNAME,
+            pass: process.env.EMAIL_PASSWORD,
+        },
+    },
+    from : {
+        support : String(process.env.SUPPORT_EMAIL),
+    }
+};

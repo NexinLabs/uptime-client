@@ -34,6 +34,15 @@ class ResponseHandler{
         });
     }
 
+    /** same as internalServerError*/
+    async  error(res: Response, message: any = "Internal Server Error", data : any = {}) {
+        res.status(500).json({
+            status: 500,
+            message: message,
+            data : data
+        });
+    }
+
     async  success(res: Response, message: any = "Success", data : any = {}) {
         res.status(200).json({
             status: 200,

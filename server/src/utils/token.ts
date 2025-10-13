@@ -1,4 +1,5 @@
 import { appConfig } from '@/config';
+import Sanitizer from '@/ext/sanitizer';
 import { sign, verify, JwtPayload } from 'jsonwebtoken';
 
 
@@ -58,7 +59,6 @@ interface UserVerifyLinkPayload {
     name: string;
     email: string;
     password: string;
-    phone: number;
 }
 
 
@@ -66,16 +66,24 @@ export class UserVerifyLink {
     public name: string | null;
     public password: string | null;
     public email: string | null;
-    public phone: number | null;
 
     constructor(obj: UserVerifyLinkPayload) {
-        this.name = obj.name || 'Guest';
-        this.email = obj.email;
+        this.name = Sanitizer.html(obj.name || 'Guest');
+        this.email = Sanitizer.email(obj.email);
         this.password = obj.password;
-        this.phone = obj.phone;
     }
 
+    validate(){
+        if(!this.email) throw new Error("Email is required");
+        if(!this.password) throw new Error("Password is required");
+        if(this.password.length < 6) throw new Error("Password must be at least 6 characters long");
+        if(!this.name) this.name = 'Guest';
+        return true;
+    }
+
+    /**Sign the user and return verification token */
     sign() {
+        this.validate();
         return sign(this.toJSON(), appConfig.JWT_SECRET, { expiresIn: 10 * 60 * 1000 }); // 10 minutes
     }
 
@@ -85,13 +93,11 @@ export class UserVerifyLink {
             const name = String(decoded.name || 'Guest');
             const email = decoded.email || null;
             const password = decoded.password || null;
-            const phone = decoded.phone || null;
 
             return new UserVerifyLink({
                 name,
                 email,
-                password,
-                phone
+                password
             });
 
         } catch (error: any) {
@@ -103,8 +109,7 @@ export class UserVerifyLink {
         return {
             name: this.name || 'Guest',
             email: this.email || null,
-            password: this.password || null,
-            phone: this.phone || null
+            password: this.password || null
         };
     }
     toString() {

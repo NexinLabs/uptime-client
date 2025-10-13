@@ -1,9 +1,13 @@
 import e from 'express';
+import { Logger } from '@/ext/logger';
 import { appConfig } from '@/config';
 import cookieParser from 'cookie-parser';
 import { connectDB } from '@/utils/db';
 import { initialMiddleware } from '@/middlewares/initial';
 import { securityHeaders } from '@/middlewares/security';
+
+const logger = Logger.instance;
+
 
 export default class UptimeClient {
     public app: e.Application;
@@ -23,7 +27,7 @@ export default class UptimeClient {
         this.app.use(initialMiddleware);
         this.app.listen(this.port, () => {
             connectDB();
-            console.log(`Server is running on port ${this.port}`);
+            logger.info(`Server is running on  ${appConfig.endpoint}`);
         });
     }
 }
