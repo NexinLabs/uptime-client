@@ -88,4 +88,7 @@ export const authAPI = {
 
   verifySignup: (token: string) =>
     apiClient.get(`/auth/verify-signup?token=${token}`),
+
+  sendMagicLink: (email: string) =>
+    apiClient.post('/auth/send-magic-link', { email }),
 };

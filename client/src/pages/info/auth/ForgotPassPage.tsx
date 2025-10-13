@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { authAPI } from '@/lib/api';
 
 const ForgotPassPage = () => {
   const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,7 +18,7 @@ const ForgotPassPage = () => {
     try {
       const response = await authAPI.forgotPassword(email);
       if (response.success) {
-        setSubmitted(true);
+        setShowSuccessDialog(true);
       }
     } catch (err: any) {
       setError(err.message || 'Failed to send reset email. Please try again.');
@@ -25,39 +26,6 @@ const ForgotPassPage = () => {
       setLoading(false);
     }
   };
-
-  if (submitted) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-gray-800 rounded-lg shadow-lg p-8 text-center">
-          <div className="mb-8">
-            <div className="text-green-400 text-6xl mb-4">✓</div>
-            <h1 className="text-3xl font-bold text-white mb-2">Check Your Email</h1>
-            <p className="text-gray-400">
-              We've sent password reset instructions to {email}
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            <p className="text-gray-400 text-sm">
-              Didn't receive the email? Check your spam folder or{' '}
-              <button
-                onClick={() => setSubmitted(false)}
-                className="text-indigo-400 hover:text-indigo-300 font-medium underline"
-              >
-                try again
-              </button>
-            </p>
-            <Link to="/login">
-              <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-md transition duration-200">
-                Back to Login
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
@@ -108,6 +76,37 @@ const ForgotPassPage = () => {
           </p>
         </div>
       </div>
+
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="bg-gray-800 border-gray-700">
+          <DialogHeader>
+            <DialogTitle className="text-white text-center text-2xl">Check Your Email</DialogTitle>
+            <DialogDescription className="text-gray-400 text-center">
+              We've sent password reset instructions to {email}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="text-center space-y-4">
+            <div className="text-green-400 text-4xl">✓</div>
+            <p className="text-gray-400 text-sm">
+              Didn't receive the email? Check your spam folder.
+            </p>
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => setShowSuccessDialog(false)}
+                variant="outline"
+                className="flex-1"
+              >
+                Try Again
+              </Button>
+              <Link to="/login" className="flex-1">
+                <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
+                  Back to Login
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

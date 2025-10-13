@@ -1,14 +1,17 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 const VerifyAccPage = () => {
   const [code, setCode] = useState('');
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle verification logic here
     console.log('Verification code:', code);
+    setShowSuccessDialog(true);
   };
 
   const handleResend = () => {
@@ -66,6 +69,25 @@ const VerifyAccPage = () => {
           </p>
         </div>
       </div>
+
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="bg-gray-800 border-gray-700">
+          <DialogHeader>
+            <DialogTitle className="text-white text-center text-2xl">Account Verified!</DialogTitle>
+            <DialogDescription className="text-gray-400 text-center">
+              Your account has been successfully verified.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="text-center space-y-4">
+            <div className="text-green-400 text-4xl">✓</div>
+            <Link to="/login">
+              <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
+                Go to Login
+              </Button>
+            </Link>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

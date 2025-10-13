@@ -207,11 +207,11 @@ export default class AuthController {
     }
 
     /**Login with link endpoint
-     * @route POST /auth/login-with-link
+     * @route POST /auth/send-magic-link
      * @access Public
      * @dependency /auth/login?token=...
      */
-    static async loginWithLink(req: Request, res: Response) {
+    static async sendLoginLink(req: Request, res: Response) {
         // Implementation for login with link
         const { email } = req.body;
         try {
