@@ -120,13 +120,13 @@ const PricingPage = () => {
                             className={`relative bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 ${plan.popular ? 'ring-2 ring-indigo-400 scale-105' : ''
                                 }`}
                         >
-                            {plan.popular && (
+                            {/* {plan.popular && (
                                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                                     <span className="bg-indigo-400 text-gray-900 px-4 py-1 rounded-full text-sm font-semibold">
                                         Most Popular
                                     </span>
                                 </div>
-                            )}
+                            )} */}
 
                             <div className="text-center mb-6">
                                 <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
@@ -228,7 +228,7 @@ const PricingPage = () => {
                             </Button>
                         </Link>
                         <Link to="/contact">
-                            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-indigo-600 px-8 py-3">
+                            <Button className="border-white text-white hover:bg-white hover:text-indigo-600 px-8 py-3">
                                 Contact Sales
                             </Button>
                         </Link>
