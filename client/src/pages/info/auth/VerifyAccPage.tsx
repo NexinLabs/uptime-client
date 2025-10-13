@@ -20,7 +20,7 @@ const VerifyAccPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
+    <div className="bg-gray-900 flex items-center justify-center px-4 min-h-[calc(100vh-200px)]">
       <div className="max-w-md w-full bg-gray-800 rounded-lg shadow-lg p-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Verify Your Account</h1>

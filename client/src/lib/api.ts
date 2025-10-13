@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '@/config';
+import axios from './axios';
 
 export interface ApiResponse<T = any> {
   success: boolean;
@@ -7,38 +7,36 @@ export interface ApiResponse<T = any> {
 }
 
 class ApiClient {
-  private baseURL: string;
-
-  constructor(baseURL: string) {
-    this.baseURL = baseURL;
+  constructor() {
+    // baseURL is already configured in the axios instance
   }
 
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: any = {}
   ): Promise<ApiResponse<T>> {
-    const url = `${this.baseURL}${endpoint}`;
-
-    const config: RequestInit = {
-      credentials: 'include', // Include cookies for authentication
+    const config = {
+      url: endpoint,
       headers: {
         'Content-Type': 'application/json',
         ...options.headers,
       },
+      method: options.method || 'GET',
+      data: options.data,
       ...options,
     };
 
     try {
-      const response = await fetch(url, config);
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'An error occurred');
-      }
-
-      return data;
-    } catch (error) {
+      const response = await axios(config);
+      return response.data;
+    } catch (error: any) {
       console.error('API request failed:', error);
+      
+      // Handle axios error response
+      if (error.response?.data) {
+        throw new Error(error.response.data.message || 'An error occurred');
+      }
+      
       throw error;
     }
   }
@@ -50,14 +48,14 @@ class ApiClient {
   async post<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'POST',
-      body: data ? JSON.stringify(data) : undefined,
+      data: data,
     });
   }
 
   async put<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'PUT',
-      body: data ? JSON.stringify(data) : undefined,
+      data: data,
     });
   }
 
@@ -66,7 +64,7 @@ class ApiClient {
   }
 }
 
-export const apiClient = new ApiClient(API_BASE_URL);
+export const apiClient = new ApiClient();
 
 // Auth API functions
 export const authAPI = {

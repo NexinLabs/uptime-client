@@ -1,7 +1,8 @@
+import { API_BASE_URL } from "@/config";
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "https://api.uptimeclient.tech",
+  baseURL: API_BASE_URL || "https://api.uptimeclient.tech",
   withCredentials: true,
 });
 

@@ -1,12 +1,10 @@
 import { Link } from 'react-router-dom';
-import { NavBar, Footer } from '@/components/components';
 import { motion } from 'framer-motion';
 
 const LandingPage = () => {
     return (
-        <div className="min-h-screen bg-gray-900 text-white">
+        <div className="bg-gray-900 text-white">
             {/* Navigation Bar */}
-            <NavBar />
 
             {/* Hero Section */}
             <div className="container mx-auto px-6 py-16">
@@ -154,9 +152,6 @@ const LandingPage = () => {
                     </div>
                 </div>
             </div>
-
-            {/* Footer */}
-            <Footer />
         </div>
     );
 };

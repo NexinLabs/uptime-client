@@ -4,7 +4,7 @@ import { Home, ArrowLeft } from 'lucide-react';
 
 const NotFoundPage = () => {
     return (
-        <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
+        <div className="bg-gray-900 flex items-center justify-center px-4 min-h-[calc(100vh-200px)]">
             <div className="text-center">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}

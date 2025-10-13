@@ -1,11 +1,9 @@
-import { NavBar, Footer } from '@/components/components';
+
 import { motion } from 'framer-motion';
 
 const AboutPage = () => {
     return (
-        <div className="min-h-screen bg-gray-900 text-white">
-            {/* Navigation Bar */}
-            <NavBar />
+        <div className="bg-gray-900 text-white">
 
             {/* Hero Section */}
             <div className="container mx-auto px-6 py-16">
@@ -158,9 +156,6 @@ const AboutPage = () => {
                     </div>
                 </motion.div> */}
             </div>
-
-            {/* Footer */}
-            <Footer />
         </div>
     );
 };

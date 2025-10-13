@@ -1,4 +1,3 @@
-import { NavBar, Footer } from '@/components/components';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -90,9 +89,7 @@ const PricingPage = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white">
-            {/* Navigation Bar */}
-            <NavBar />
+        <div className="bg-gray-900 text-white">
 
             {/* Hero Section */}
             <div className="container mx-auto px-6 py-16">
@@ -238,9 +235,6 @@ const PricingPage = () => {
                     </div>
                 </motion.div>
             </div>
-
-            {/* Footer */}
-            <Footer />
         </div>
     );
 };
