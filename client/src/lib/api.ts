@@ -28,7 +28,14 @@ class ApiClient {
 
     try {
       const response = await axios(config);
-      return response.data;
+      const serverResponse = response.data;
+      
+      // Transform server response format to client expected format
+      return {
+        success: response.status >= 200 && response.status < 300,
+        message: serverResponse.message || 'Success',
+        data: serverResponse.data
+      };
     } catch (error: any) {
       console.error('API request failed:', error);
       

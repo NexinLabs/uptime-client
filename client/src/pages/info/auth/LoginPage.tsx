@@ -1,22 +1,23 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { useAuth } from '@/components/auth-provider';
 import { authAPI } from '@/lib/api';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [isMagicLinkMode, setIsMagicLinkMode] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-  const navigate = useNavigate();
+  const { login, isLoading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
+    setSuccess('');
 
     if (isMagicLinkMode) {
       try {
@@ -26,20 +27,16 @@ const LoginPage = () => {
         }
       } catch (err: any) {
         setError(err.message || 'Failed to send login link. Please try again.');
-      } finally {
-        setLoading(false);
       }
     } else {
       try {
-        const response = await authAPI.login(email, password);
-        if (response.success) {
-          // Redirect to dashboard on successful login
-          navigate('/dashboard');
-        }
+        console.log('Attempting login with:', { email }); // Debug log
+        await login(email, password);
+        setSuccess('Login successful! Redirecting...');
+        console.log('Login successful, should redirect now'); // Debug log
       } catch (err: any) {
+        console.error('Login error:', err); // Debug log
         setError(err.message || 'Login failed. Please try again.');
-      } finally {
-        setLoading(false);
       }
     }
   };
@@ -58,6 +55,11 @@ const LoginPage = () => {
               {error}
             </div>
           )}
+          {success && (
+            <div className="bg-green-900 border border-green-700 text-green-200 px-4 py-3 rounded-md">
+              {success}
+            </div>
+          )}
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
@@ -69,7 +71,7 @@ const LoginPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              disabled={loading}
+              disabled={isLoading}
               className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:opacity-50"
               placeholder="Enter your email"
             />
@@ -86,7 +88,7 @@ const LoginPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                disabled={loading}
+                disabled={isLoading}
                 className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:opacity-50"
                 placeholder="Enter your password"
               />
@@ -100,7 +102,7 @@ const LoginPage = () => {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
-                  disabled={loading}
+                  disabled={isLoading}
                   className="h-4 w-4 text-indigo-600 bg-gray-700 border-gray-600 rounded focus:ring-indigo-500 focus:ring-2 disabled:opacity-50"
                 />
                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">
@@ -118,10 +120,10 @@ const LoginPage = () => {
 
           <Button
             type="submit"
-            disabled={loading}
+            disabled={isLoading}
             className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-md transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? (isMagicLinkMode ? 'Sending Link...' : 'Signing In...') : (isMagicLinkMode ? 'Send Login Link' : 'Sign In')}
+            {isLoading ? (isMagicLinkMode ? 'Sending Link...' : 'Signing In...') : (isMagicLinkMode ? 'Send Login Link' : 'Sign In')}
           </Button>
 
           <div className="text-center">
