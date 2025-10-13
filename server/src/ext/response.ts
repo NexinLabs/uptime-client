@@ -1,4 +1,10 @@
 import { Response } from "express";
+import { debug } from "@/config";
+import Logger  from "./logger";
+
+const logger = Logger.instance;
+
+
 
 class ResponseHandler{
 
@@ -32,6 +38,7 @@ class ResponseHandler{
             message: message,
             data : data
         });
+        debug.controllerError && logger.error("Internal Server Error:", data);
     }
 
     /** same as internalServerError*/
@@ -41,6 +48,8 @@ class ResponseHandler{
             message: message,
             data : data
         });
+        
+        debug.controllerError && logger.error("Internal Server Error:", data);
     }
 
     async  success(res: Response, message: any = "Success", data : any = {}) {

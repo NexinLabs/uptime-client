@@ -145,7 +145,6 @@ export default class AuthController {
 
             res.handler.success(res, "User verified successfully", { user: userToken.toJSON() });
         } catch (error) {
-            console.error("Verification error:", error);
             res.handler.internalServerError(res, "An error occurred during verification");
         }
     }

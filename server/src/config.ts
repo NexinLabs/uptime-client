@@ -32,3 +32,8 @@ export const emailConfig = {
         support : String(process.env.SUPPORT_EMAIL),
     }
 };
+
+
+export const debug = {
+    controllerError : true
+}

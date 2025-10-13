@@ -35,7 +35,7 @@ class LogColors {
     static fatal  = `${colors.bright}${colors.red}[FATAL]${colors.reset}`;
 }
 
-class Logger {
+export default class Logger {
     levels = LoggerLevel;
 
     // Default log level is DEBUG 

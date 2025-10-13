@@ -3,6 +3,7 @@ import { Logger } from '@/ext/logger';
 import { appConfig } from '@/config';
 import cookieParser from 'cookie-parser';
 import { connectDB } from '@/utils/db';
+import endpoints from '@/routes/endpoints';
 import { initialMiddleware } from '@/middlewares/initial';
 import { securityHeaders } from '@/middlewares/security';
 
@@ -25,6 +26,7 @@ export default class UptimeClient {
         this.app.use(e.urlencoded({ extended: true }));
         this.app.use(securityHeaders());
         this.app.use(initialMiddleware);
+        this.app.use('/', endpoints);
         this.app.listen(this.port, () => {
             connectDB();
             logger.info(`Server is running on  ${appConfig.endpoint}`);
