@@ -3,10 +3,11 @@ import { appConfig } from "@/config";
 
 async function connectDB() {
     try {
-        await mongoose.connect(appConfig.mongoUri, {
+        const _con = await mongoose.connect(appConfig.mongoUri, {
             dbName: 'uptimeclient'
         });
         console.log("Connected to MongoDB");
+        return _con;
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
         process.exit(1);

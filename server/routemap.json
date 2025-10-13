@@ -1,0 +1,29 @@
+{
+    "/services": {
+        "description": "Service management endpoints",
+        "methods": {
+            "GET": {
+                "description": "Retrieve a list of services of an user"
+            },
+            "POST": {
+                "description": "Create a new service for an user"
+            }
+        },
+        "endpoints": {
+            "/:serviceId": {
+                "description": "Operations on a specific service",
+                "methods": {
+                    "GET": {
+                        "description": "Retrieve details of a specific service"
+                    },
+                    "PUT": {
+                        "description": "Update details of a specific service"
+                    },
+                    "DELETE": {
+                        "description": "Delete a specific service"
+                    }
+                }
+            }
+        }
+    }
+}
