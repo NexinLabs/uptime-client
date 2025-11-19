@@ -33,7 +33,7 @@ const AnimatedCounter = ({ end, duration = 2, suffix = '' }: { end: number; dura
 
 const DashboardPreview = () => {
     const ref = useRef(null);
-    const isInView = useInView(ref, { once: true, margin: "0px" });
+    const isInView = useInView(ref, { once: true, amount: 0.6 });
     
     return (
         <div ref={ref} className="w-full max-w-4xl mx-auto">
@@ -190,8 +190,8 @@ const ProgressBar = ({ label, percentage, delay }: { label: string; percentage: 
 
 const LandingPage = () => {
     const { scrollYProgress } = useScroll();
-    const heroY = useTransform(scrollYProgress, [0, 0.3], [0, 100]);
-    const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+    const heroY = useTransform(scrollYProgress, [0, 0.35], [0, 120]);
+    const heroOpacity = useTransform(scrollYProgress, [0, 0.3, 0.35], [1, 0.8, 0]);
 
     return (
         <div className="bg-gray-900 text-white overflow-hidden">
