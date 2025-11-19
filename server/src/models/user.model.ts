@@ -5,6 +5,7 @@ interface IUser extends Document {
     _id: mongoose.Types.ObjectId;
     name: string;
     email: string;
+    token: string;
     password: string;
     avatar?: string;
 }
@@ -27,6 +28,10 @@ const UserSchema: Schema<IUser> = new Schema({
     password: {
         type: String,
         required: [true, "Password is required"],
+    },
+    token : {
+        type: String,
+        required: [true, "Token is required"],
     },
     avatar: {
         type: String,

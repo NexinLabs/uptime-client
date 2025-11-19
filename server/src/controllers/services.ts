@@ -15,12 +15,12 @@ export default class ServiceController {
             if (!req.user?._id) {
                 return res.handler.unAuthorized(res);
             }
-            
+
             const services = await res.models.Service.find({
                 owner: req.user._id
             }).lean();
-            
-            
+
+
             res.handler.success(res, "Services retrieved successfully", services);
         } catch (error) {
             res.handler.internalServerError(res, "Error retrieving services", error);
@@ -102,7 +102,7 @@ export default class ServiceController {
             if (!req.user?._id) {
                 return res.handler.unAuthorized(res);
             }
-            const service = await res.models.Service.deleteOne({ _id: req.params.id});
+            const service = await res.models.Service.deleteOne({ _id: req.params.id });
             if (service.deletedCount === 0) {
                 return res.handler.notFound(res, "Service not found");
             }
@@ -128,17 +128,17 @@ export default class ServiceController {
             }).populate('report');
 
             const totalServices = services.length;
-            
+
             // Calculate uptime percentage
             const activeServices = services.filter(s => s.status === 1).length;
-            const overallUptime = totalServices > 0 
-                ? ((activeServices / totalServices) * 100).toFixed(1) 
+            const overallUptime = totalServices > 0
+                ? ((activeServices / totalServices) * 100).toFixed(1)
                 : '0.0';
 
             // Calculate average response time from reports
             let totalResponseTime = 0;
             let servicesWithReports = 0;
-            
+
             services.forEach(service => {
                 if (service.report && (service.report as any).lastweek?.avgResponseTime) {
                     totalResponseTime += (service.report as any).lastweek.avgResponseTime;
@@ -146,7 +146,7 @@ export default class ServiceController {
                 }
             });
 
-            const avgResponseTime = servicesWithReports > 0 
+            const avgResponseTime = servicesWithReports > 0
                 ? Math.round(totalResponseTime / servicesWithReports)
                 : 0;
 
@@ -180,7 +180,7 @@ export default class ServiceController {
             }
 
             const limit = parseInt(req.query.limit as string) || 50;
-            
+
             const services = await res.models.Service.find({
                 owner: req.user._id
             }).sort({ lastrun: -1 }).limit(limit).populate('report');
@@ -193,11 +193,11 @@ export default class ServiceController {
                 status: service.status === 1 ? 'success' : service.status === 0 ? 'failed' : 'pending',
                 statusCode: service.status,
                 timestamp: service.lastrun,
-                message: service.status === 1 
-                    ? 'Service check successful' 
-                    : service.status === 0 
-                    ? 'Service check failed' 
-                    : 'Service check pending',
+                message: service.status === 1
+                    ? 'Service check successful'
+                    : service.status === 0
+                        ? 'Service check failed'
+                        : 'Service check pending',
                 responseTime: (service.report as any)?.lastweek?.avgResponseTime || null
             }));
 

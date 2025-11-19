@@ -5,6 +5,14 @@ import { UserVerifyLink } from "@/utils/token";
 import EmailTemplates from '@/assets/email-templates';
 import { sendMailWithHTML } from "@/utils/services/mail";
 
+
+const tokens = {
+    login : new Map<string, string>(),
+    verifySignup : new Map<string, string>(),
+    resetPassword : new Map<string, string>(),
+}
+
+
 export default class AuthController {
 
     /**Authenticate endpoint
@@ -38,21 +46,36 @@ export default class AuthController {
             const { token } = req.query;
 
             if (token) {
-                const tokenUser = Token.fromToken(String(token));
-                if (!tokenUser || !tokenUser._id) {
+                if ( !tokens.login.has(String(token))) {
+                    return res.handler.badRequest(res, "Invalid or expired token");
+                }
+
+                const parsedToken = Token.fromToken(String(token));
+                if (!parsedToken || !parsedToken._id) {
                     return res.handler.badRequest(res, "Invalid token");
                 }
-                const user = await res.models.User.findById(tokenUser._id);
-                if (!user) {
-                    return res.handler.notFound(res, "User not found");
+
+
+                const user = await res.models.User.findById(parsedToken._id);
+                if (!user || !user._id) {
+                    return res.handler.badRequest(res, "Invalid token");
                 }
-                res.cookie('token', token, { httpOnly: true, secure: true });
+
+                if (!user.token) {
+                    const userToken = new Token({ _id: String(user._id), name: user.name });
+                    user.token = userToken.save();
+                    await user.save();
+                }
+
+                res.cookie('token', user.token, { httpOnly: true, secure: true });
+
+                // Remove used token
+                tokens.login.delete(String(token));
 
                 //  redirect to allowed origin's dashboard
                 res.redirect(`${ALLOWED.origin}/dashboard`);
                 return;
             }
-
 
             if (!email || !password) {
                 return res.handler.badRequest(res, "Email and password are required");
@@ -65,10 +88,15 @@ export default class AuthController {
             if (!isMatch) {
                 return res.handler.unAuthorized(res, "Invalid email or password");
             }
-            const NewToken = new Token({ _id: String(user._id), name: user.name }).save();
 
-            res.cookie('token', NewToken, { httpOnly: true, secure: true });
-            res.handler.success(res, "Login successful", { token: NewToken });
+            if (!user.token) {
+                const userToken = new Token({ _id: String(user._id), name: user.name });
+                user.token = userToken.save();
+                await user.save();
+            }
+
+            res.cookie('token', user.token, { httpOnly: true, secure: true });
+            res.handler.success(res, "Login successful", { token: user.token });
 
         } catch (error: any) {
             res.handler.internalServerError(res, error.message);
@@ -90,6 +118,10 @@ export default class AuthController {
             }
             const hashedPassword = await req.helper.hashPassword(password);
             const emailVerificationToken = new UserVerifyLink({ name, email, password: hashedPassword }).sign();
+            
+            // save verification token temporarily
+            tokens.verifySignup.set(emailVerificationToken, email);
+
             const link = `${appConfig.endpoint}/auth/verify-signup?token=${emailVerificationToken}`;
 
             const _email = EmailTemplates.verifyAccount(name || 'There', link);
@@ -110,6 +142,12 @@ export default class AuthController {
     static async verifySignup(req: Request, res: Response): Promise<void> {
         try {
             const { token } = req.query;
+
+            if (!tokens.verifySignup.has(String(token))) {
+                res.handler.badRequest(res, "Invalid or expired token");
+                return;
+            }
+
             if (!token || typeof token !== 'string') {
                 res.handler.badRequest(res, "Invalid or missing token");
                 return;
@@ -119,6 +157,9 @@ export default class AuthController {
                 res.handler.badRequest(res, "Invalid token");
                 return;
             }
+
+            // Remove used token
+            tokens.verifySignup.delete(String(token));
 
             // Check if user already exists
             const existingUser = await res.models.User.findOne({ email: tokenUser.email });
@@ -133,15 +174,15 @@ export default class AuthController {
                 email: tokenUser.email,
                 password: tokenUser.password
             });
+            const userToken = new Token({ _id: String(newUser._id), name: newUser.name });
+            const tokenString = userToken.save();
+            
+            newUser.token = tokenString;
+
             await newUser.save();
-            // Create a token for the new user
-            const userToken = new Token({
-                _id: String(newUser._id),
-                name: newUser.name,
-            });
 
             // Set the token in the response
-            res.cookie('token', userToken.save(), { httpOnly: true, secure: true });
+            res.cookie('token', tokenString, { httpOnly: true, secure: true });
 
             res.handler.success(res, "User verified successfully", { user: userToken.toJSON() });
         } catch (error) {
@@ -157,6 +198,8 @@ export default class AuthController {
     static async resetPassword(req: Request, res: Response) {
 
         const { token } = req.query;
+        const { newPassword } = req.body;
+
         if (!token || typeof token !== 'string') {
             res.handler.badRequest(res, "Invalid or missing token");
             return;
@@ -169,13 +212,17 @@ export default class AuthController {
                 return;
             }
 
-            const { newPassword } = req.body;
             if (!newPassword) {
                 return res.handler.badRequest(res, "New password is required");
             }
+            const newToken = new Token({ _id: tokenUser._id.toString(), name: tokenUser.name })
             const hashedPassword = await req.helper.hashPassword(newPassword);
-            await res.models.User.findByIdAndUpdate(tokenUser._id, { password: hashedPassword });
+            await res.models.User.updateOne({ _id: tokenUser._id }, { 
+                password: hashedPassword,
+                token: newToken.save()
+            });
             res.handler.success(res, "Password reset successful");
+
         } catch (error) {
             res.handler.internalServerError(res, "An error occurred during password reset", error);
         }
@@ -195,10 +242,14 @@ export default class AuthController {
                 return res.handler.notFound(res, "User not found");
             }
             const resetToken = new Token({ _id: user._id.toString(), name: user.name }).save();
+            
+            // save reset password token temporarily
+            tokens.resetPassword.set(resetToken, email);
+            
             const link = `${appConfig.endpoint}/auth/reset-password?token=${resetToken}`;
 
             const _email = EmailTemplates.forgotPassword(user.name || 'There', link);
-            await sendMailWithHTML(email, email, _email.subject, _email.html);
+            sendMailWithHTML(email, email, _email.subject, _email.html);
 
             res.handler.success(res, "Check your email for password reset link.");
         } catch (error) {
@@ -220,11 +271,14 @@ export default class AuthController {
                 return res.handler.notFound(res, "User not found");
             }
             const loginToken = new Token({ _id: user._id.toString(), name: user.name }).save();
+            
+            // save login token temporarily
+            tokens.login.set(loginToken,  email);
+            
             const link = `${appConfig.endpoint}/auth/login?token=${loginToken}`;
 
             const _email = EmailTemplates.loginWithLink(user.name || 'There', link);
-
-            await sendMailWithHTML(email, email, _email.subject, _email.html);
+            sendMailWithHTML(email, email, _email.subject, _email.html);
             res.handler.success(res, "Check your email for login link.");
         } catch (error) {
             res.handler.error(res, "Error sending login link", error);
