@@ -1,20 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-export interface IService extends Document {
-    _id: mongoose.Types.ObjectId;
-    status: number;
-    owner: mongoose.Types.ObjectId;
-    restarter: mongoose.Types.ObjectId;
-    report: mongoose.Types.ObjectId;
-    perms: number;
-    name: string;
-    url: string;
-    method: string;
-    headers: any;
-    body: any;
-    lastrun: Date;
-    endpoints: string[];
-}
 
 export interface IService extends Document {
     _id: mongoose.Types.ObjectId;
@@ -28,6 +13,7 @@ export interface IService extends Document {
     method: string;
     headers: any;
     body: any;
+    delay: number;  // time delay to next check in seconds
     lastrun: Date;
     endpoints: string[];
 }
@@ -39,6 +25,7 @@ const ServiceSchema: Schema = new Schema({
     report: { type: Schema.Types.ObjectId, ref: 'Report', },
     perms: { type: Number, default: 0, },
     name: { type: String, required: false, },
+    delay : { type: Number, required: true, default: 60, },
     url: { type: String, required: [true, 'URL is required'], },
     method: { type: String, enum: ['POST', 'GET', 'HEAD'], required: [true, 'Method is required'], default: "HEAD" },
     headers: { type: Schema.Types.Mixed, default: {}, },

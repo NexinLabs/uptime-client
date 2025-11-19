@@ -4,6 +4,7 @@ interface ILogRecord {
     method: string;
     level: 'info' | 'warning' | 'error';
     message: string;
+    status_code?: number;
     meta?: Record<string, any>;
 }
 
@@ -17,6 +18,10 @@ const LogRecordSchema = new Schema({
     method: {
         type: String,
         required: true
+    },
+    status_code : {
+        type: Number,
+        required: false
     },
     level: {
         type: String,
