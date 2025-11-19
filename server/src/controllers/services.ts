@@ -216,19 +216,31 @@ export default class ServiceController {
                 ? ((activeServices / totalServices) * 100).toFixed(1)
                 : '0.0';
 
-            // Calculate average response time from reports
+            // Calculate average response time from recent logs
             let totalResponseTime = 0;
-            let servicesWithReports = 0;
+            let logsWithResponseTime = 0;
 
-            services.forEach(service => {
-                if (service.report && (service.report as any).lastweek?.avgResponseTime) {
-                    totalResponseTime += (service.report as any).lastweek.avgResponseTime;
-                    servicesWithReports++;
+            for (const service of services) {
+                try {
+                    const logDoc = await res.models.Log.findOne({ service: service._id }).select('records').lean();
+                    if (logDoc && logDoc.records && logDoc.records.length > 0) {
+                        // Get the last 10 records for this service
+                        const recentRecords = logDoc.records.slice(-10);
+                        recentRecords.forEach((record: any) => {
+                            if (record.meta?.response_time_ms && record.meta.response_time_ms > 0) {
+                                totalResponseTime += record.meta.response_time_ms;
+                                logsWithResponseTime++;
+                            }
+                        });
+                    }
+                } catch (error) {
+                    // Skip this service if log retrieval fails
+                    continue;
                 }
-            });
+            }
 
-            const avgResponseTime = servicesWithReports > 0
-                ? Math.round(totalResponseTime / servicesWithReports)
+            const avgResponseTime = logsWithResponseTime > 0
+                ? Math.round(totalResponseTime / logsWithResponseTime)
                 : 0;
 
             // Count incidents (services with status 0 or issues)

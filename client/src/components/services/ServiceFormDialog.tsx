@@ -29,6 +29,7 @@ export const ServiceFormDialog = ({ open, onOpenChange, service, onSuccess }: Se
     name: service?.name || "",
     url: service?.url || "",
     method: getMethodString(service?.method),
+    delay: service?.delay || 60,
     headers: service?.headers ? JSON.stringify(service.headers, null, 2) : "{}",
     body: service?.body ? JSON.stringify(service.body, null, 2) : "{}",
   });
@@ -65,6 +66,7 @@ export const ServiceFormDialog = ({ open, onOpenChange, service, onSuccess }: Se
         name: formData.name,
         url: formData.url,
         method: formData.method,
+        delay: formData.delay,
         headers,
         body,
       };
@@ -81,6 +83,7 @@ export const ServiceFormDialog = ({ open, onOpenChange, service, onSuccess }: Se
         name: "",
         url: "",
         method: "HEAD",
+        delay: 60,
         headers: "{}",
         body: "{}",
       });
@@ -134,6 +137,26 @@ export const ServiceFormDialog = ({ open, onOpenChange, service, onSuccess }: Se
                 <SelectItem value="POST">POST</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="delay">Check Interval (minutes) *</Label>
+            <div className="space-y-2">
+              <input
+                id="delay"
+                type="range"
+                min="1"
+                max="60"
+                value={formData.delay / 60}
+                onChange={(e) => setFormData({ ...formData, delay: parseInt(e.target.value) * 60 })}
+                className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+              />
+              <div className="flex justify-between text-sm text-gray-400">
+                <span>1 min</span>
+                <span className="text-emerald-500 font-medium">{Math.round(formData.delay / 60)} minutes</span>
+                <span>60 min</span>
+              </div>
+            </div>
           </div>
 
           <div className="space-y-2">

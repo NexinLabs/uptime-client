@@ -26,7 +26,7 @@ const ServiceSchema: Schema = new Schema({
     report: { type: Schema.Types.ObjectId, ref: 'Report', },
     perms: { type: Number, default: 0, },
     name: { type: String, required: false, },
-    delay : { type: Number, required: true, default: 60, },
+    delay : { type: Number, required: true, default: 60, min : 60, max: 3600 },
     url: { type: String, required: [true, 'URL is required'], },
     method: { type: Schema.Types.ObjectId, ref: 'Method', required: [true, 'Method is required'] },
     headers: { type: Schema.Types.Mixed, default: {}, },

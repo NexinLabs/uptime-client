@@ -20,7 +20,7 @@ class ServiceMonitor {
         }
 
         try {
-            logger.info("Initializing Service Monitor...");
+            logger.debug("Initializing Service Monitor...");
             const services = await models.Service.find().populate('method').exec();
 
             for (const service of services) {
@@ -28,7 +28,7 @@ class ServiceMonitor {
             }
 
             this.isInitialized = true;
-            logger.info(`Service Monitor initialized with ${services.length} services`);
+            logger.debug(`Service Monitor initialized with ${services.length} services`);
         } catch (error) {
             logger.error("Failed to initialize Service Monitor", error);
             throw error;
@@ -52,7 +52,7 @@ class ServiceMonitor {
 
             // Schedule new check
             this.scheduleServiceCheck(service);
-            logger.info(`Added service ${service.name} (${serviceId}) to monitor`);
+            logger.debug(`Added service ${service.name} (${serviceId}) to monitor`);
         } catch (error) {
             logger.error(`Error adding service ${serviceId} to monitor`, error);
         }
@@ -66,7 +66,7 @@ class ServiceMonitor {
         if (timeout) {
             clearTimeout(timeout);
             this.services.delete(serviceId);
-            logger.info(`Removed service ${serviceId} from monitor`);
+            logger.debug(`Removed service ${serviceId} from monitor`);
         }
     }
 
@@ -131,7 +131,7 @@ class ServiceMonitor {
             const response = await axios(config);
             const responseTime = Date.now() - startTime;
 
-            logger.info(`Service ${service.name} responded with status ${response.status} (${responseTime}ms)`);
+            logger.debug(`Service ${service.name} responded with status ${response.status} (${responseTime}ms)`);
 
             // Check if response indicates service is down
             if (response.status >= 400) {
@@ -141,7 +141,7 @@ class ServiceMonitor {
                     lastrun: new Date(),
                 });
                 await this.logServiceError(service, response.status, response.statusText, responseTime);
-                logger.warn(`Service ${service.name} returned error: ${response.status} ${response.statusText}`);
+                logger.debug(`Service ${service.name} returned error: ${response.status} ${response.statusText}`);
             } else {
                 // Service is up - update status to up (1) and last run time
                 await models.Service.findByIdAndUpdate(serviceId, {
@@ -149,7 +149,7 @@ class ServiceMonitor {
                     lastrun: new Date(),
                 });
                 await this.logServiceSuccess(service, response.status, responseTime);
-                logger.info(`Service ${service.name} is up: ${response.status} (${responseTime}ms)`);
+                logger.debug(`Service ${service.name} is up: ${response.status} (${responseTime}ms)`);
             }
 
         } catch (error: any) {
@@ -284,13 +284,13 @@ class ServiceMonitor {
      * Stop all monitoring
      */
     public static shutdown(): void {
-        logger.info("Shutting down Service Monitor...");
+        logger.debug("Shutting down Service Monitor...");
         for (const [serviceId, timeout] of this.services.entries()) {
             clearTimeout(timeout);
         }
         this.services.clear();
         this.isInitialized = false;
-        logger.info("Service Monitor shutdown complete");
+        logger.debug("Service Monitor shutdown complete");
     }
 
     /**
