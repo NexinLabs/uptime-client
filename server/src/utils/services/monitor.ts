@@ -116,8 +116,9 @@ class ServiceMonitor {
                 validateStatus: () => true, // Don't throw on any status code
             };
 
-            // Add body only for POST requests
-            if (service.method === 'POST' && service.body) {
+            // Add body for methods that support it (POST, PUT, PATCH)
+            // Note: GET with body is non-standard but some APIs support it
+            if (service.body && Object.keys(service.body).length > 0) {
                 config.data = service.body;
             }
 
