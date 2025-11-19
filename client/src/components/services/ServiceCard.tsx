@@ -95,7 +95,7 @@ export const ServiceCard = ({ service, onEdit, onDelete }: ServiceCardProps) => 
             size="icon"
             variant="ghost"
             onClick={() => onEdit(service)}
-            className="text-gray-400 hover:text-white"
+            className="text-gray-400 "
           >
             <Edit className="h-4 w-4" />
           </Button>

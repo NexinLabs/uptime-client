@@ -223,12 +223,12 @@ const PricingPage = () => {
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link to="/signup">
-                            <Button className="bg-white text-indigo-600 hover:bg-gray-100 px-8 py-3">
+                            <Button variant="white" className="text-indigo-600 px-8 py-3">
                                 Start Free Trial
                             </Button>
                         </Link>
                         <Link to="/contact">
-                            <Button className="border-white text-white hover:bg-white hover:text-indigo-600 px-8 py-3">
+                            <Button variant="white-outline" className="px-8 py-3">
                                 Contact Sales
                             </Button>
                         </Link>

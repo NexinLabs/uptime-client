@@ -173,7 +173,7 @@ export const ServiceFormDialog = ({ open, onOpenChange, service, onSuccess }: Se
             </Button>
             <Button
               type="button"
-              variant="outline"
+              variant="white-outline"
               onClick={() => onOpenChange(false)}
               disabled={loading}
             >
