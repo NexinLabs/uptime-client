@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DashboardTabsConfig } from "@/config";
+import { servicesAPI } from "@/lib/api";
+import { ServiceFormDialog } from "@/components/services/ServiceFormDialog";
+import { ServiceCard } from "@/components/services/ServiceCard";
+import { ActivityLogs } from "@/components/services/ActivityLogs";
 
 import TopLabel from "@/components/ui/labels/TopLabel";
+import { Button } from "@/components/ui/button";
 
-import { Menu, Target, ListRestart, Logs, Activity, Clock, Globe, AlertTriangle } from "lucide-react";
+import { Menu, Target, ListRestart, Logs, Activity, Clock, Globe, AlertTriangle, Plus, RefreshCw } from "lucide-react";
 // import { Skeleton } from "@/components/ui/skeleton";
 
 const Dashboard = () => {
@@ -32,6 +37,14 @@ const Dashboard = () => {
     const [isMobile, setisMobile] = useState(window.innerWidth < 768);
     const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 768);
     const [activeTab, setActiveTab] = useState(0);
+    
+    // State for services
+    const [services, setServices] = useState<any[]>([]);
+    const [overview, setOverview] = useState<any>(null);
+    const [logs, setLogs] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [selectedService, setSelectedService] = useState<any>(null);
 
     async function windowManage() {
         window.onresize = () => {
@@ -39,9 +52,79 @@ const Dashboard = () => {
         };
     }
 
+    const fetchOverview = async () => {
+        try {
+            const response = await servicesAPI.getOverview();
+            console.log('Overview response:', response);
+            setOverview(response.data);
+        } catch (error) {
+            console.error("Error fetching overview:", error);
+        }
+    };
+
+    const fetchServices = async () => {
+        try {
+            setLoading(true);
+            const response = await servicesAPI.getServices();
+            console.log('Services response:', response);
+            const servicesData = response.data as any[] || [];
+            setServices(servicesData);
+        } catch (error) {
+            console.error("Error fetching services:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchLogs = async () => {
+        try {
+            const response = await servicesAPI.getRecentLogs(50);
+            console.log('Logs response:', response);
+            const logsData = (response.data as any)?.logs || [];
+            setLogs(logsData);
+        } catch (error) {
+            console.error("Error fetching logs:", error);
+        }
+    };
+
+    const handleCreateService = () => {
+        setSelectedService(null);
+        setIsDialogOpen(true);
+    };
+
+    const handleEditService = (service: any) => {
+        setSelectedService(service);
+        setIsDialogOpen(true);
+    };
+
+    const handleDeleteService = async (serviceId: string) => {
+        try {
+            await servicesAPI.deleteService(serviceId);
+            fetchServices();
+            fetchOverview();
+        } catch (error) {
+            console.error("Error deleting service:", error);
+            throw error; // Re-throw so ServiceCard can handle it
+        }
+    };
+
+    const handleServiceSuccess = () => {
+        fetchServices();
+        fetchOverview();
+        fetchLogs();
+    };
+
+    const handleRefresh = () => {
+        fetchServices();
+        fetchOverview();
+        fetchLogs();
+    };
+
     useEffect(() => {
         windowManage();
-        // console.log(params.id?.toString());
+        fetchOverview();
+        fetchServices();
+        fetchLogs();
     }, [params]);
 
     return (
@@ -66,7 +149,17 @@ const Dashboard = () => {
             <div id="content" className={`${!isMobile && 'ml-72 max-w-[calc(100vw-288px)'} flex-1  min-h-screen bg-gray-900 text-white `}>
                 <div className="flex flex-row justify-between items-center bg-gray-800 p-4">
                     <h2 className="text-2xl font-bold">{tabs[activeTab]?.name}</h2>
-                    {isMobile && <Menu className="hover:text-gray-400 transition-colors duration-300 cursor-pointer" onClick={() => setIsSidebarOpen(!isSidebarOpen)} />}
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={handleRefresh}
+                            className="text-gray-400 hover:text-white"
+                        >
+                            <RefreshCw className="h-5 w-5" />
+                        </Button>
+                        {isMobile && <Menu className="hover:text-gray-400 transition-colors duration-300 cursor-pointer" onClick={() => setIsSidebarOpen(!isSidebarOpen)} />}
+                    </div>
                 </div>
 
                 {tabs[activeTab].id == DashboardTabsConfig.Monitoring.id && (
@@ -78,9 +171,13 @@ const Dashboard = () => {
                             <div className="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl border border-gray-700 hover:border-emerald-500/50 transition-all duration-300">
                                 <div className="flex items-center justify-between">
                                     <Activity className="h-8 w-8 text-emerald-500" />
-                                    <span className="text-emerald-500 text-sm font-medium">OPERATIONAL</span>
+                                    <span className="text-emerald-500 text-sm font-medium">
+                                        {overview?.status || "LOADING"}
+                                    </span>
                                 </div>
-                                <h3 className="text-2xl font-bold mt-4">99.9%</h3>
+                                <h3 className="text-2xl font-bold mt-4">
+                                    {overview?.overallUptime?.toFixed(1) || "0.0"}%
+                                </h3>
                                 <p className="text-gray-400 text-sm">Overall Uptime</p>
                             </div>
 
@@ -90,7 +187,9 @@ const Dashboard = () => {
                                     <Clock className="h-8 w-8 text-blue-500" />
                                     <span className="text-blue-500 text-sm font-medium">LATENCY</span>
                                 </div>
-                                <h3 className="text-2xl font-bold mt-4">187ms</h3>
+                                <h3 className="text-2xl font-bold mt-4">
+                                    {overview?.avgResponseTime || "0"}ms
+                                </h3>
                                 <p className="text-gray-400 text-sm">Average Response</p>
                             </div>
 
@@ -100,7 +199,9 @@ const Dashboard = () => {
                                     <Globe className="h-8 w-8 text-purple-500" />
                                     <span className="text-purple-500 text-sm font-medium">MONITORS</span>
                                 </div>
-                                <h3 className="text-2xl font-bold mt-4">24</h3>
+                                <h3 className="text-2xl font-bold mt-4">
+                                    {overview?.activeServices || 0}/{overview?.totalServices || 0}
+                                </h3>
                                 <p className="text-gray-400 text-sm">Active Services</p>
                             </div>
 
@@ -110,34 +211,53 @@ const Dashboard = () => {
                                     <AlertTriangle className="h-8 w-8 text-yellow-500" />
                                     <span className="text-yellow-500 text-sm font-medium">INCIDENTS</span>
                                 </div>
-                                <h3 className="text-2xl font-bold mt-4">2</h3>
+                                <h3 className="text-2xl font-bold mt-4">
+                                    {overview?.incidents || 0}
+                                </h3>
                                 <p className="text-gray-400 text-sm">Open Issues</p>
                             </div>
                         </div>
 
                         {/* Monitoring Table */}
                         <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700 overflow-hidden">
-                            <div className="p-6 border-b border-gray-700">
+                            <div className="p-6 border-b border-gray-700 flex justify-between items-center">
                                 <h3 className="text-xl font-semibold">Service Status</h3>
+                                <Button onClick={handleCreateService} className="bg-emerald-600 hover:bg-emerald-700">
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Add Service
+                                </Button>
                             </div>
                             <div className="p-6">
-                                <div className="space-y-4">
-                                    {[1, 2, 3, 4, 5].map((_, index) => (
-                                        <div key={index} className="bg-gray-800/50 p-4 rounded-lg flex items-center justify-between hover:bg-gray-700/50 transition-all duration-300">
-                                            <div className="flex items-center space-x-4">
-                                                <div className="h-3 w-3 rounded-full bg-emerald-500"></div>
-                                                <div>
-                                                    <h4 className="font-medium">Service {index + 1}</h4>
-                                                    <p className="text-sm text-gray-400">https://service{index + 1}.example.com</p>
-                                                </div>
+                                {loading ? (
+                                    <div className="space-y-4">
+                                        {[1, 2, 3].map((i) => (
+                                            <div key={i} className="bg-gray-800/50 p-4 rounded-lg animate-pulse">
+                                                <div className="h-4 bg-gray-700 rounded w-3/4 mb-2"></div>
+                                                <div className="h-3 bg-gray-700 rounded w-1/2"></div>
                                             </div>
-                                            <div className="text-right">
-                                                <p className="font-medium text-emerald-500">Up</p>
-                                                <p className="text-sm text-gray-400">99.9% uptime</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
+                                        ))}
+                                    </div>
+                                ) : services.length === 0 ? (
+                                    <div className="text-center py-12">
+                                        <Globe className="h-12 w-12 text-gray-600 mx-auto mb-3" />
+                                        <p className="text-gray-400 mb-4">No services configured yet</p>
+                                        <Button onClick={handleCreateService} className="bg-emerald-600 hover:bg-emerald-700">
+                                            <Plus className="h-4 w-4 mr-2" />
+                                            Create Your First Service
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {services.map((service) => (
+                                            <ServiceCard
+                                                key={service._id}
+                                                service={service}
+                                                onEdit={handleEditService}
+                                                onDelete={handleDeleteService}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -158,17 +278,25 @@ const Dashboard = () => {
                 {tabs[activeTab].id == DashboardTabsConfig.ServerLogs.id && (
                     <div className="p-6">
                         <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700">
-                        {/* <span className="absolute top-[-15px] backdrop-blur-lg bg-black px-2 ml-6 border-emerald-500 border rounded-lg">Comming Soon</span> */}
-                            {/* <CommingSoon/> */}
-                            <TopLabel text="Comming Soon" variant="default"/>
+                            <div className="p-6 border-b border-gray-700">
+                                <h2 className="text-xl font-semibold">Recent Activity</h2>
+                                <p className="text-gray-400 text-sm mt-1">Monitor your service checks and performance</p>
+                            </div>
                             <div className="p-6">
-                                <h2 className="text-xl font-semibold mb-4">Server Logs</h2>
-                                <p className="text-gray-400">View and analyze your server logs</p>
+                                <ActivityLogs logs={logs} loading={loading} />
                             </div>
                         </div>
                     </div>
                 )}
             </div>
+
+            {/* Service Form Dialog */}
+            <ServiceFormDialog
+                open={isDialogOpen}
+                onOpenChange={setIsDialogOpen}
+                service={selectedService}
+                onSuccess={handleServiceSuccess}
+            />
         </div>
     );
 };

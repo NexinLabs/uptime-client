@@ -14,7 +14,7 @@
     "skipLibCheck": true,
 
     /* Bundler mode */
-    "moduleResolution": "node10",
+    "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",

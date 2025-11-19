@@ -30,11 +30,20 @@ class ApiClient {
       const response = await axios(config);
       const serverResponse = response.data;
       
+      // If server response is already the data (not wrapped), use it directly
+      if (Array.isArray(serverResponse) || (serverResponse && !serverResponse.data && !serverResponse.message)) {
+        return {
+          success: response.status >= 200 && response.status < 300,
+          message: 'Success',
+          data: serverResponse as T
+        };
+      }
+      
       // Transform server response format to client expected format
       return {
         success: response.status >= 200 && response.status < 300,
         message: serverResponse.message || 'Success',
-        data: serverResponse.data
+        data: serverResponse.data || serverResponse
       };
     } catch (error: any) {
       console.error('API request failed:', error);
@@ -96,4 +105,28 @@ export const authAPI = {
 
   sendMagicLink: (email: string) =>
     apiClient.post('/auth/send-magic-link', { email }),
+};
+
+// Services API functions
+export const servicesAPI = {
+  getServices: () => 
+    apiClient.get('/services'),
+
+  getService: (serviceId: string) => 
+    apiClient.get(`/services/${serviceId}`),
+
+  createService: (serviceData: any) => 
+    apiClient.post('/services', serviceData),
+
+  updateService: (serviceId: string, serviceData: any) => 
+    apiClient.put(`/services/${serviceId}`, serviceData),
+
+  deleteService: (serviceId: string) => 
+    apiClient.delete(`/services/${serviceId}`),
+
+  getOverview: () => 
+    apiClient.get('/services/overview/stats'),
+
+  getRecentLogs: (limit?: number) => 
+    apiClient.get(`/services/logs/recent${limit ? `?limit=${limit}` : ''}`),
 };
