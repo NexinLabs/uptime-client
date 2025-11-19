@@ -1,20 +1,26 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DashboardTabsConfig } from "@/config";
-import { servicesAPI } from "@/lib/api";
+import { servicesAPI, authAPI } from "@/lib/api";
 import { ServiceFormDialog } from "@/components/services/ServiceFormDialog";
 import { ServiceCard } from "@/components/services/ServiceCard";
 import { ActivityLogs } from "@/components/services/ActivityLogs";
 
 import TopLabel from "@/components/ui/labels/TopLabel";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 
-import { Menu, Target, ListRestart, Logs, Activity, Clock, Globe, AlertTriangle, Plus, RefreshCw } from "lucide-react";
+import { Menu, Target, ListRestart, Logs, Activity, Clock, Globe, AlertTriangle, Plus, RefreshCw, LogOut, User } from "lucide-react";
 // import { Skeleton } from "@/components/ui/skeleton";
 
 const Dashboard = () => {
     const navigate = useNavigate();
     const params = useParams();
+    const { toast } = useToast();
+    
+    // User state
+    const [user, setUser] = useState<{ name: string; _id: string } | null>(null);
+    
     const tabs = [
         {
             id: DashboardTabsConfig.Monitoring.id,
@@ -72,6 +78,23 @@ const Dashboard = () => {
             setOverview(response.data);
         } catch (error) {
             console.error("Error fetching overview:", error);
+        }
+    };
+
+    const fetchUserInfo = async () => {
+        try {
+            const response = await authAPI.authenticate();
+            console.log('User auth response:', response);
+            if (response.data) {
+                setUser({
+                    name: response.data.name,
+                    _id: response.data._id
+                });
+            }
+        } catch (error) {
+            console.error("Error fetching user info:", error);
+            // If authentication fails, redirect to login
+            navigate('/login');
         }
     };
 
@@ -163,8 +186,34 @@ const Dashboard = () => {
         fetchLogs();
     };
 
+    const handleLogout = async () => {
+        try {
+            await authAPI.logout();
+            
+            // Clear any stored tokens/session data
+            localStorage.removeItem('token');
+            sessionStorage.clear();
+            
+            toast({
+                title: "Logged out successfully",
+                description: "You have been logged out of your account.",
+            });
+            
+            // Redirect to login page
+            navigate('/login');
+        } catch (error: any) {
+            console.error("Logout error:", error);
+            toast({
+                title: "Logout failed",
+                description: error.message || "An error occurred during logout",
+                variant: "destructive",
+            });
+        }
+    };
+
     useEffect(() => {
         windowManage();
+        fetchUserInfo();
         fetchOverview();
         fetchServices();
         fetchLogs();
@@ -172,11 +221,11 @@ const Dashboard = () => {
 
     return (
         <div className="container flex-row flex min-w-screen min-h-screen">
-            <div id="sidebar" className={`fixed text-white overflow-hidden transition-all duration-200 z-10 h-screen bg-gray-800 ${isSidebarOpen || !isMobile ? 'w-72' : 'w-0'}`}>
+            <div id="sidebar" className={`fixed text-white overflow-hidden transition-all duration-200 z-10 h-screen bg-gray-800 ${isSidebarOpen || !isMobile ? 'w-72' : 'w-0'} flex flex-col`}>
                 <div className="header bg-emerald-700 p-4">
                     <h2 className="text-2xl font-bold cursor-pointer" onClick={() => navigate('/')}>UptimeClient</h2>
                 </div>
-                <ul className="p-4 *:my-4 *:bg-gray-700 *:p-2 *:rounded-md flex-shrink-0 whitespace-nowrap">
+                <ul className="p-4 *:my-4 *:bg-gray-700 *:p-2 *:rounded-md flex-shrink-0 whitespace-nowrap flex-1">
                     {tabs.map((tab, index) => (
                         <li key={tab.id} onClick={() => {
                             if (tab.url) navigate(tab.url);
@@ -187,6 +236,33 @@ const Dashboard = () => {
                         </li>
                     ))}
                 </ul>
+                
+                {/* User Info & Logout Section */}
+                <div className="p-4 border-t border-gray-700 space-y-3">
+                    {/* User Profile */}
+                    <div className="flex items-center gap-3 px-3 py-2 bg-gray-700/50 rounded-lg">
+                        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center">
+                            <User className="h-5 w-5 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-white truncate">
+                                {user?.name || 'Loading...'}
+                            </p>
+                            <p className="text-xs text-gray-400">
+                                Account
+                            </p>
+                        </div>
+                    </div>
+                    
+                    {/* Logout Button */}
+                    <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center justify-center gap-2 bg-red-600/10 hover:bg-red-600/20 text-red-400 hover:text-red-300 p-3 rounded-lg transition-all duration-300 border border-red-600/30 hover:border-red-500/50 group"
+                    >
+                        <LogOut className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                        <span className="font-medium">Logout</span>
+                    </button>
+                </div>
             </div>
 
             <div id="content" className={`${!isMobile && 'ml-72 max-w-[calc(100vw-288px)'} flex-1  min-h-screen bg-gray-900 text-white `}>

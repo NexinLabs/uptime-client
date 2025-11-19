@@ -23,7 +23,7 @@ export default class AuthController {
         if (!req.user) {
             return res.handler.unAuthorized(res);
         }
-        res.handler.success(res, "User authenticated", { user: req.user });
+        res.handler.success(res, "User authenticated", req.user );
     }
 
     /**Logout endpoint
