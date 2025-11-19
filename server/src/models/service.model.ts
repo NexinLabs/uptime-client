@@ -33,14 +33,14 @@ export interface IService extends Document {
 }
 
 const ServiceSchema: Schema = new Schema({
-    status: { type: Number, required: true, default: 0, },
-    owner: { type: Schema.Types.ObjectId, ref: 'User', required: true, },
+    status: { type: Number, required: [true, 'Status is required'], default: 0, },
+    owner: { type: Schema.Types.ObjectId, ref: 'User', required: [true, 'Owner is required'], },
     restarter: { type: Schema.Types.ObjectId, ref: 'Restarter', required: false, default: null, },
     report: { type: Schema.Types.ObjectId, ref: 'Report', },
     perms: { type: Number, default: 0, },
     name: { type: String, required: false, },
-    url: { type: String, required: true, },
-    method: { type: String, enum: ['POST', 'GET', 'HEAD'], required: true, default: "HEAD" },
+    url: { type: String, required: [true, 'URL is required'], },
+    method: { type: String, enum: ['POST', 'GET', 'HEAD'], required: [true, 'Method is required'], default: "HEAD" },
     headers: { type: Schema.Types.Mixed, default: {}, },
     body: { type: Schema.Types.Mixed, default: {}, },
     lastrun: { type: Date, default: Date.now, },
