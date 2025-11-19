@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
+import ReviewSection from '../../components/block/ReviewSection';
 
 const AnimatedCounter = ({ end, duration = 2, suffix = '' }: { end: number; duration?: number; suffix?: string }) => {
     const [count, setCount] = useState(0);
@@ -9,16 +10,16 @@ const AnimatedCounter = ({ end, duration = 2, suffix = '' }: { end: number; dura
 
     useEffect(() => {
         if (!isInView) return;
-        
+
         let startTime: number;
         let animationFrame: number;
 
         const animate = (currentTime: number) => {
             if (!startTime) startTime = currentTime;
             const progress = Math.min((currentTime - startTime) / (duration * 1000), 1);
-            
+
             setCount(Math.floor(progress * end));
-            
+
             if (progress < 1) {
                 animationFrame = requestAnimationFrame(animate);
             }
@@ -34,7 +35,7 @@ const AnimatedCounter = ({ end, duration = 2, suffix = '' }: { end: number; dura
 const DashboardPreview = () => {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, amount: 0.6 });
-    
+
     return (
         <div ref={ref} className="w-full max-w-4xl mx-auto">
             <motion.div
@@ -54,7 +55,7 @@ const DashboardPreview = () => {
                         </div>
                         <div className="ml-4 text-gray-400 text-sm font-mono">UptimeClient</div>
                     </div>
-                    
+
                     {/* Content Area */}
                     <div className="p-8 space-y-6">
                         {/* Stats Grid */}
@@ -87,7 +88,7 @@ const DashboardPreview = () => {
                                 <div className="text-2xl font-bold text-white">12</div>
                             </motion.div>
                         </div>
-                        
+
                         {/* Service Status List */}
                         <div className="space-y-3">
                             {[
@@ -113,7 +114,7 @@ const DashboardPreview = () => {
                                 </motion.div>
                             ))}
                         </div>
-                        
+
                         {/* Mini Chart */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
@@ -136,7 +137,7 @@ const DashboardPreview = () => {
                         </motion.div>
                     </div>
                 </div>
-                
+
                 {/* Glow Effect */}
                 <div className="absolute inset-0 -z-10 blur-3xl opacity-30">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-500 to-purple-500" />
@@ -202,7 +203,7 @@ const LandingPage = () => {
             </div>
 
             {/* Hero Section */}
-            <motion.div 
+            <motion.div
                 style={{ y: heroY, opacity: heroOpacity }}
                 className="container mx-auto px-6 py-16 relative z-10"
             >
@@ -212,7 +213,7 @@ const LandingPage = () => {
                     transition={{ duration: 0.8 }}
                     className="text-center"
                 >
-                    <motion.h1 
+                    <motion.h1
                         className="text-5xl md:text-7xl font-bold text-white mb-6"
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -223,7 +224,7 @@ const LandingPage = () => {
                             24/7
                         </span>
                     </motion.h1>
-                    <motion.p 
+                    <motion.p
                         className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -276,11 +277,11 @@ const LandingPage = () => {
                 >
                     <h2 className="text-3xl font-bold text-center mb-8 text-white">Why Monitoring is Important</h2>
                     <p className="text-lg text-gray-300 text-center max-w-4xl mx-auto mb-8">
-                        In today's fast-paced digital world, website downtime can result in significant financial losses, damaged reputation, and lost customer trust. 
-                        Effective monitoring ensures your services remain online and performant, allowing you to detect issues early, maintain high availability, 
+                        In today's fast-paced digital world, website downtime can result in significant financial losses, damaged reputation, and lost customer trust.
+                        Effective monitoring ensures your services remain online and performant, allowing you to detect issues early, maintain high availability,
                         and provide a seamless experience for your users.
                     </p>
-                    
+
                     {/* Performance Metrics */}
                     <div className="mt-8 max-w-2xl mx-auto">
                         <ProgressBar label="Uptime Reliability" percentage={99} delay={0.2} />
@@ -367,6 +368,12 @@ const LandingPage = () => {
                     />
                 </motion.div>
 
+
+
+                {/* Reviews Section */}
+                <ReviewSection />
+
+
                 {/* Stats Section with Animated Counters */}
                 <motion.div
                     initial={{ opacity: 0, y: 40 }}
@@ -402,10 +409,11 @@ const LandingPage = () => {
                                 <AnimatedCounter end={100} suffix="+" />
                             </h4>
                             <p className="text-gray-300 mt-2">Websites Monitored</p>
-                            
+
                         </motion.div>
                     </div>
                 </motion.div>
+
 
                 {/* CTA Section */}
                 <motion.div
