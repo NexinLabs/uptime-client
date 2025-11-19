@@ -17,10 +17,18 @@ interface ServiceFormDialogProps {
 
 export const ServiceFormDialog = ({ open, onOpenChange, service, onSuccess }: ServiceFormDialogProps) => {
   const [loading, setLoading] = useState(false);
+  
+  // Extract method string from service (handle both object and string)
+  const getMethodString = (method: any): string => {
+    if (typeof method === 'string') return method;
+    if (method && typeof method === 'object' && method.method) return method.method;
+    return 'HEAD';
+  };
+  
   const [formData, setFormData] = useState({
     name: service?.name || "",
     url: service?.url || "",
-    method: service?.method || "HEAD",
+    method: getMethodString(service?.method),
     headers: service?.headers ? JSON.stringify(service.headers, null, 2) : "{}",
     body: service?.body ? JSON.stringify(service.body, null, 2) : "{}",
   });

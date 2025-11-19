@@ -7,7 +7,7 @@ interface Service {
   _id: string;
   name: string;
   url: string;
-  method: string;
+  method: any; // Can be string or object with method property
   status: number;
   lastrun: string;
 }
@@ -21,6 +21,11 @@ interface ServiceCardProps {
 export const ServiceCard = ({ service, onEdit, onDelete }: ServiceCardProps) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  // Extract method string (handle both object and string)
+  const methodStr = typeof service.method === 'object' && service.method !== null
+    ? service.method.method
+    : service.method;
 
   const statusConfig = {
     0: { color: "bg-red-500", text: "Down", textColor: "text-red-500" },
@@ -78,7 +83,7 @@ export const ServiceCard = ({ service, onEdit, onDelete }: ServiceCardProps) => 
             <p className="text-sm text-gray-400 truncate">{service.url}</p>
             <div className="flex items-center gap-2 mt-1">
               <span className="text-xs bg-gray-700 px-2 py-0.5 rounded">
-                {service.method}
+                {methodStr}
               </span>
               <span className="text-xs text-gray-500">
                 Last check: {formatDate(service.lastrun)}

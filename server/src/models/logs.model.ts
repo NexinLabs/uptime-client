@@ -35,6 +35,10 @@ const LogRecordSchema = new Schema({
     meta: {
         type: Schema.Types.Mixed,
         default: {}
+    },
+    timestamp: {
+        type: Date,
+        default: Date.now
     }
 }, { _id: false });
 

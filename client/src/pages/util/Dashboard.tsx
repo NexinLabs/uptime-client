@@ -78,10 +78,40 @@ const Dashboard = () => {
 
     const fetchLogs = async () => {
         try {
-            const response = await servicesAPI.getRecentLogs(50);
-            console.log('Logs response:', response);
-            const logsData = (response.data as any)?.logs || [];
-            setLogs(logsData);
+            // Fetch all services first if not already loaded
+            const servicesData = services.length > 0 ? services : (await servicesAPI.getServices()).data as any[];
+            
+            // Fetch logs from each service's Log model
+            const allLogs: any[] = [];
+            for (const service of servicesData) {
+                try {
+                    const response = await servicesAPI.getServiceLogs(service._id, 50);
+                    const serviceLogsData = (response.data as any)?.logs || [];
+                    
+                    // Transform log records to match ActivityLogs interface
+                    const transformedLogs = serviceLogsData.map((record: any) => ({
+                        id: `${service._id}-${record.meta?.timestamp || Date.now()}`,
+                        serviceName: service.name || service.url,
+                        url: record.meta?.url || service.url,
+                        method: record.method,
+                        status: record.level === 'info' ? 'success' : record.level === 'error' ? 'failed' : 'pending',
+                        statusCode: record.status_code || 0,
+                        timestamp: record.meta?.timestamp || new Date().toISOString(),
+                        message: record.message,
+                        responseTime: record.meta?.response_time_ms || null
+                    }));
+                    
+                    allLogs.push(...transformedLogs);
+                } catch (error) {
+                    console.error(`Error fetching logs for service ${service._id}:`, error);
+                }
+            }
+            
+            // Sort logs by timestamp (most recent first)
+            allLogs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+            
+            // Limit to 50 most recent logs
+            setLogs(allLogs.slice(0, 50));
         } catch (error) {
             console.error("Error fetching logs:", error);
         }

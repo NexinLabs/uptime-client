@@ -6,6 +6,7 @@ import { connectDB } from '@/utils/db';
 import endpoints from '@/routes/endpoints';
 import { initialMiddleware } from '@/middlewares/initial';
 import { securityHeaders } from '@/middlewares/security';
+import ServiceMonitor from '@/utils/services/monitor';
 
 const logger = Logger.instance;
 
@@ -27,9 +28,29 @@ export default class UptimeClient {
         this.app.use(securityHeaders());
         this.app.use(initialMiddleware);
         this.app.use('/', endpoints);
-        this.app.listen(this.port, () => {
-            connectDB();
+        this.app.listen(this.port, async () => {
+            await connectDB();
             logger.info(`Server is running on  ${appConfig.endpoint}`);
+            
+            // Initialize service monitor after database connection
+            try {
+                await ServiceMonitor.initialize();
+            } catch (error) {
+                logger.error('Failed to initialize ServiceMonitor', error);
+            }
+        });
+
+        // Graceful shutdown
+        process.on('SIGTERM', () => {
+            logger.info('SIGTERM received, shutting down gracefully');
+            ServiceMonitor.shutdown();
+            process.exit(0);
+        });
+
+        process.on('SIGINT', () => {
+            logger.info('SIGINT received, shutting down gracefully');
+            ServiceMonitor.shutdown();
+            process.exit(0);
         });
     }
 }

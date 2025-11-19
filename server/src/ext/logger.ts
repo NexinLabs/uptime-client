@@ -90,8 +90,8 @@ export default class Logger {
         }
     }
 }
-
-export { Logger, LoggerLevel };
+const logger = Logger.instance;
+export { Logger, LoggerLevel, logger };
 
 // Usage example
 // const logger = Logger.instance;

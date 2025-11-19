@@ -1,16 +1,17 @@
 import mongoose, { Schema, Document } from 'mongoose';
+import { IMethod } from './method.model';
 
 
 export interface IService extends Document {
     _id: mongoose.Types.ObjectId;
-    status: number;
+    status: number; // 0: unknown, 1: up, 2: down
     owner: mongoose.Types.ObjectId;
     restarter: mongoose.Types.ObjectId;
     report: mongoose.Types.ObjectId;
     perms: number;
     name: string;
     url: string;
-    method: string;
+    method: mongoose.Types.ObjectId | IMethod;
     headers: any;
     body: any;
     delay: number;  // time delay to next check in seconds
@@ -27,7 +28,7 @@ const ServiceSchema: Schema = new Schema({
     name: { type: String, required: false, },
     delay : { type: Number, required: true, default: 60, },
     url: { type: String, required: [true, 'URL is required'], },
-    method: { type: String, enum: ['POST', 'GET', 'HEAD'], required: [true, 'Method is required'], default: "HEAD" },
+    method: { type: Schema.Types.ObjectId, ref: 'Method', required: [true, 'Method is required'] },
     headers: { type: Schema.Types.Mixed, default: {}, },
     body: { type: Schema.Types.Mixed, default: {}, },
     lastrun: { type: Date, default: Date.now, },
