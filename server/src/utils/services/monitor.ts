@@ -21,7 +21,7 @@ class ServiceMonitor {
 
         try {
             logger.debug("Initializing Service Monitor...");
-            const services = await models.Service.find().populate('method').exec();
+            const services = await models.Service.find().exec();
 
             for (const service of services) {
                 this.scheduleServiceCheck(service);
@@ -41,7 +41,7 @@ class ServiceMonitor {
      */
     public static async addService(serviceId: string): Promise<void> {
         try {
-            const service = await models.Service.findById(serviceId).populate('method').exec();
+            const service = await models.Service.findById(serviceId).exec();
             if (!service) {
                 logger.warn(`Service ${serviceId} not found`);
                 return;
@@ -107,14 +107,9 @@ class ServiceMonitor {
         try {
             logger.debug(`Checking service: ${service.name} (${service.url})`);
 
-            // Extract method string from populated Method object
-            const methodStr = typeof service.method === 'object' && service.method !== null 
-                ? (service.method as any).method 
-                : service.method;
-
             // Prepare request configuration
             const config: AxiosRequestConfig = {
-                method: methodStr,
+                method: service.method,
                 url: service.url,
                 headers: service.headers || {},
                 timeout: 30000, // 30 second timeout
@@ -122,7 +117,7 @@ class ServiceMonitor {
             };
 
             // Add body only for POST requests
-            if (methodStr === 'POST' && service.body) {
+            if (service.method === 'POST' && service.body) {
                 config.data = service.body;
             }
 
@@ -169,7 +164,7 @@ class ServiceMonitor {
             // Reschedule next check
             try {
                 // Fetch latest service data in case delay was updated
-                const updatedService = await models.Service.findById(serviceId).populate('method').exec();
+                const updatedService = await models.Service.findById(serviceId).exec();
                 if (updatedService) {
                     this.scheduleServiceCheck(updatedService);
                 } else {
@@ -194,12 +189,8 @@ class ServiceMonitor {
         responseTime: number
     ): Promise<void> {
         try {
-            const methodStr = typeof service.method === 'object' && service.method !== null 
-                ? (service.method as any).method 
-                : service.method;
-
             const logRecord = {
-                method: methodStr,
+                method: service.method,
                 level: 'error' as const,
                 status_code: statusCode,
                 message: `Service check failed: ${message}`,
@@ -238,12 +229,8 @@ class ServiceMonitor {
         responseTime: number
     ): Promise<void> {
         try {
-            const methodStr = typeof service.method === 'object' && service.method !== null 
-                ? (service.method as any).method 
-                : service.method;
-
             const logRecord = {
-                method: methodStr,
+                method: service.method,
                 level: 'info' as const,
                 status_code: statusCode,
                 message: `Service check successful`,

@@ -1,5 +1,4 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { IMethod } from './method.model';
 
 
 export interface IService extends Document {
@@ -11,7 +10,7 @@ export interface IService extends Document {
     perms: number;
     name: string;
     url: string;
-    method: mongoose.Types.ObjectId | IMethod;
+    method: 'GET' | 'POST' | 'HEAD';
     headers: any;
     body: any;
     delay: number;  // time delay to next check in seconds
@@ -28,7 +27,7 @@ const ServiceSchema: Schema = new Schema({
     name: { type: String, required: false, },
     delay : { type: Number, required: true, default: 60, min : 60, max: 3600 },
     url: { type: String, required: [true, 'URL is required'], },
-    method: { type: Schema.Types.ObjectId, ref: 'Method', required: [true, 'Method is required'] },
+    method: { type: String, enum: ['GET', 'POST', 'HEAD'], required: [true, 'Method is required'], default: 'HEAD' },
     headers: { type: Schema.Types.Mixed, default: {}, },
     body: { type: Schema.Types.Mixed, default: {}, },
     lastrun: { type: Date, default: Date.now, },

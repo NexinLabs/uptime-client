@@ -20,7 +20,7 @@ export default class ServiceController {
 
             const services = await res.models.Service.find({
                 owner: req.user._id
-            }).populate('method').lean();
+            }).lean();
 
 
             res.handler.success(res, "Services retrieved successfully", services);
@@ -40,37 +40,15 @@ export default class ServiceController {
                 return res.handler.unAuthorized(res);
             }
             
-            // Extract method string from request
-            const methodStr = req.body.method || 'HEAD';
-            
-            // Find or create Method object (only by method type)
-            let methodDoc = await res.models.Method.findOne({ 
-                method: methodStr
-            });
-            
-            if (!methodDoc) {
-                methodDoc = new res.models.Method({
-                    method: methodStr,
-                    headers: {},
-                    body: {}
-                });
-                await methodDoc.save();
-            }
-            
-            // Create service with Method reference (headers/body stay on Service)
-            // Exclude method from req.body to prevent overwriting the ObjectId
-            const { method: _, ...restBody } = req.body;
+            // Create service with method string directly
             const serviceData = {
-                ...restBody,
+                ...req.body,
                 owner: req.user._id,
-                method: methodDoc._id,
+                method: req.body.method || 'HEAD',
             };
             
             const newService = new res.models.Service(serviceData);
             await newService.save();
-            
-            // Populate method before returning
-            await newService.populate('method');
             
             // Start monitoring the new service
             await ServiceMonitor.addService(newService._id.toString());
@@ -94,7 +72,7 @@ export default class ServiceController {
             const service = await res.models.Service.findOne({
                 _id: req.params.serviceId,
                 owner: req.user._id
-            }).populate('method');
+            });
             if (!service) {
                 return res.handler.notFound(res, "Service not found");
             }
@@ -115,40 +93,11 @@ export default class ServiceController {
                 return res.handler.unAuthorized(res);
             }
             
-            // If method is being updated, handle Method object creation/lookup
-            let updateData: any;
-            
-            if (req.body.method) {
-                const methodStr = req.body.method;
-                
-                let methodDoc = await res.models.Method.findOne({ 
-                    method: methodStr
-                });
-                
-                if (!methodDoc) {
-                    methodDoc = new res.models.Method({
-                        method: methodStr,
-                        headers: {},
-                        body: {}
-                    });
-                    await methodDoc.save();
-                }
-                
-                // Exclude method from req.body to prevent overwriting the ObjectId
-                const { method: _, ...restBody } = req.body;
-                updateData = {
-                    ...restBody,
-                    method: methodDoc._id
-                };
-            } else {
-                updateData = { ...req.body };
-            }
-            
             const service = await res.models.Service.findOneAndUpdate(
                 { _id: req.params.serviceId, owner: req.user._id },
-                updateData,
+                req.body,
                 { new: true, runValidators: true }
-            ).populate('method');
+            );
             
             if (!service) {
                 return res.handler.notFound(res, "Service not found");

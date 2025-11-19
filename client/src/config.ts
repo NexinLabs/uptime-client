@@ -14,7 +14,15 @@ export const DashboardTabsConfig = {
     },
     ServerLogs : {
         id : 3462348,
-        name : "Server Logs",
+        name : "Audit Logs",
+    },
+    Security: {
+        id : 3462349,
+        name : "Security",
+    },
+    Reports :{
+        id : 3462350,
+        name : "Reports",
     }
 
 }

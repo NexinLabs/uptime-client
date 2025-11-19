@@ -27,6 +27,19 @@ const Dashboard = () => {
             icon: ListRestart,
             url: "#"
         },
+        
+        {
+            id: DashboardTabsConfig.Security.id,
+            name: DashboardTabsConfig.Security.name,
+            icon: AlertTriangle,
+            url: "#"
+        },
+        {
+            id: DashboardTabsConfig.Reports.id,
+            name: DashboardTabsConfig.Reports.name,
+            icon: Activity,
+            url: "#"
+        },
         {
             id: DashboardTabsConfig.ServerLogs.id,
             name: DashboardTabsConfig.ServerLogs.name,
@@ -300,6 +313,30 @@ const Dashboard = () => {
                             <div className="p-6">
                                 <h2 className="text-xl font-semibold mb-4">Service Restarter</h2>
                                 <p className="text-gray-400">Configure automatic restart rules for your services</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {tabs[activeTab].id == DashboardTabsConfig.Security.id && (
+                    <div className="p-6">
+                        <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700">
+                        <TopLabel text="Comming Soon" variant="default"/>
+                            <div className="p-6">
+                                <h2 className="text-xl font-semibold mb-4">Security Settings</h2>
+                                <p className="text-gray-400">Manage security configurations for your monitoring services</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {tabs[activeTab].id == DashboardTabsConfig.Reports.id && (
+                    <div className="p-6">
+                        <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700">
+                        <TopLabel text="Comming Soon" variant="default"/>
+                            <div className="p-6">
+                                <h2 className="text-xl font-semibold mb-4">Reports</h2>
+                                <p className="text-gray-400">Generate and view reports on your service performance and uptime</p>
                             </div>
                         </div>
                     </div>
