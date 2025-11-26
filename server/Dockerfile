@@ -10,7 +10,7 @@ COPY package*.json ./
 #RUN apk add --no-cache build-base python3
 
 # Install all dependencies (including dev dependencies for building)
-RUN npm install 
+RUN npm clean-install  
 
 # Copy source code
 COPY . .
@@ -28,7 +28,7 @@ COPY package*.json ./
 COPY tsconfig.json ./
 
 # Install only production dependencies
-RUN npm ci --production && npm cache clean --force
+RUN npm clean-install --production && npm cache clean --force
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
