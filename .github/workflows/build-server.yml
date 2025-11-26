@@ -12,6 +12,7 @@ on:
     paths:
       - 'server/**'
 
+      
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
