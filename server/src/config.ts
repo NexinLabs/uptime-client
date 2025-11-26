@@ -12,7 +12,7 @@ export const appConfig = {
 
 
 export const ALLOWED = {
-    origin: process.env.ALLOWED_ORIGIN || 'https://uptimeclient.tech',
+    origin: process.env.ALLOWED_ORIGIN?.split(',') || ['https://uptimeclient.tech', 'https://www.uptimeclient.tech', 'http://localhost:3000'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],

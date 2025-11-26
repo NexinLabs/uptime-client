@@ -17,7 +17,6 @@ export default class UptimeClient {
 
     constructor() {
         this.app = e();
-        this.app.set('trust proxy', true);
         this.port = appConfig.port;
     }
 

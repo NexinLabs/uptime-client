@@ -160,7 +160,7 @@ class ServiceMonitor {
                 error.message,
                 0
             );
-            logger.error(`Service ${service.name} check failed: ${error.message}`);
+            logger.debug(`Service ${service.name} check failed: ${error.message}`);
         } finally {
             // Reschedule next check
             try {
@@ -217,7 +217,7 @@ class ServiceMonitor {
             );
 
         } catch (error) {
-            logger.error(`Failed to log error for service ${service.name}`, error);
+            logger.debug(`Failed to log error for service ${service.name}`, error);
         }
     }
 
@@ -257,7 +257,7 @@ class ServiceMonitor {
             );
 
         } catch (error) {
-            logger.error(`Failed to log success for service ${service.name}`, error);
+            logger.debug(`Failed to log success for service ${service.name}`, error);
         }
     }
 
