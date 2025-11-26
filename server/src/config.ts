@@ -23,12 +23,19 @@ export const emailConfig = {
     {
         service: "gmail",
         host: 'smtp.gmail.com',
-        port: 465,
-        secure: true,
+        port: 587,
+        secure: false, // use STARTTLS
         auth: {
             user: process.env.EMAIL_USERNAME,
             pass: process.env.EMAIL_PASSWORD,
         },
+        connectionTimeout: 10000, // 10 seconds
+        greetingTimeout: 10000,
+        socketTimeout: 15000,
+        tls: {
+            rejectUnauthorized: false,
+            ciphers: 'SSLv3'
+        }
     },
     from : {
         support : String(process.env.SUPPORT_EMAIL),
