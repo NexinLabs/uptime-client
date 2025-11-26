@@ -41,5 +41,4 @@ jobs:
           context: ./server
           push: true
           tags: |
-            ghcr.io/${{ env.REPO_LOWER }}/server:latest
-            ghcr.io/${{ env.REPO_LOWER }}/server:${{ github.sha }}
+            ghcr.io/${{ env.REPO_LOWER }}-server:latest
