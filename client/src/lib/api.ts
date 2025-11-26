@@ -54,30 +54,34 @@ class ApiClient {
         }
     }
 
-    async get<T>(endpoint: string): Promise<ApiResponse<T>> {
+    async get<T>(endpoint: string) {
         return this.request<T>(endpoint, { method: 'GET' });
     }
 
-    async post<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+    async post<T>(endpoint: string, data?: any) {
         return this.request<T>(endpoint, {
             method: 'POST',
             data: data,
         });
     }
 
-    async put<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+    async put<T>(endpoint: string, data?: any) {
         return this.request<T>(endpoint, {
             method: 'PUT',
             data: data,
         });
     }
 
-    async delete<T>(endpoint: string): Promise<ApiResponse<T>> {
+    async delete<T>(endpoint: string) {
         return this.request<T>(endpoint, { method: 'DELETE' });
     }
 }
 
 export const apiClient = new ApiClient();
+
+
+
+
 
 // Auth API functions
 export const authAPI = {
@@ -103,6 +107,9 @@ export const authAPI = {
     sendMagicLink: (email: string) =>
         apiClient.post('/auth/send-magic-link', { email }),
 };
+
+
+
 
 // Services API functions
 export const servicesAPI = {
