@@ -5,8 +5,8 @@
     "scripts": {
         "start": "npx ts-node dist/index.js",
         "dev": "npx nodemon src/index.ts",
-        "build": "npx  tsc -p .",
-        "dep": "npx tsc -p . && node dist/index.js"
+        "build": "npx tsc --skipLibCheck",
+        "dep": "npx tsc --skipLibCheck && node dist/index.js"
     },
     "keywords": [],
     "author": "https://github.com/hunter87ff",
