@@ -1,6 +1,7 @@
 name: Build and Push Server Docker Image
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -12,7 +13,6 @@ on:
     paths:
       - 'server/**'
 
-      
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -20,6 +20,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set lowercase repository name
+        run: echo "REPO_LOWER=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -34,5 +37,5 @@ jobs:
           context: ./server
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/server:latest
-            ghcr.io/${{ github.repository }}/server:${{ github.sha }}
+            ghcr.io/${{ env.REPO_LOWER }}/server:latest
+            ghcr.io/${{ env.REPO_LOWER }}/server:${{ github.sha }}
