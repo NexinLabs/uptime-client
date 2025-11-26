@@ -77,4 +77,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 
-If you have any questions or need further assistance, please feel free to contact at [hunter87.dev@google.com](mailto:hunter87.dev@google.com).
+If you have any questions or need further assistance, please feel free to contact at [uptimeclient@gmail.com](mailto:uptimeclient@gmail.com).
