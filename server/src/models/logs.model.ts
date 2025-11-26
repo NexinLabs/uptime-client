@@ -1,4 +1,4 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, model, Document, Types } from 'mongoose';
 
 interface ILogRecord {
     method: string;
@@ -9,8 +9,8 @@ interface ILogRecord {
 }
 
 export interface ILog extends Document {
-    _id: Schema.Types.ObjectId;
-    service: Schema.Types.ObjectId;
+    _id: Types.ObjectId;
+    service: Types.ObjectId;
     records: ILogRecord[];
 }
 
