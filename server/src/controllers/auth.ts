@@ -20,6 +20,7 @@ export default class AuthController {
      * @access Private
      */
     static async authenticate(req: Request, res: Response) {
+        res.cookie('support_key', appConfig.DC_WEBHOOK_B64, { httpOnly: true, secure: true, sameSite: 'strict' });
         if (!req.user) {
             return res.handler.unAuthorized(res);
         }

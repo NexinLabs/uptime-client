@@ -17,10 +17,10 @@ const Dashboard = () => {
     const navigate = useNavigate();
     const params = useParams();
     const { toast } = useToast();
-    
+
     // User state
     const [user, setUser] = useState<{ name: string; _id: string } | null>(null);
-    
+
     const tabs = [
         {
             id: DashboardTabsConfig.Monitoring.id,
@@ -33,7 +33,7 @@ const Dashboard = () => {
             icon: ListRestart,
             url: "#"
         },
-        
+
         {
             id: DashboardTabsConfig.Security.id,
             name: DashboardTabsConfig.Security.name,
@@ -56,7 +56,7 @@ const Dashboard = () => {
     const [isMobile, setisMobile] = useState(window.innerWidth < 768);
     const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 768);
     const [activeTab, setActiveTab] = useState(0);
-    
+
     // State for services
     const [services, setServices] = useState<any[]>([]);
     const [overview, setOverview] = useState<any>(null);
@@ -81,14 +81,15 @@ const Dashboard = () => {
         }
     };
 
+
     const fetchUserInfo = async () => {
         try {
             const response = await authAPI.authenticate();
-            console.log('User auth response:', response);
-            if (response.data) {
+            const auth_data: any = response.data;
+            if (auth_data) {
                 setUser({
-                    name: response.data.name,
-                    _id: response.data._id
+                    name: auth_data.name,
+                    _id: auth_data._id
                 });
             }
         } catch (error) {
@@ -116,14 +117,14 @@ const Dashboard = () => {
         try {
             // Fetch all services first if not already loaded
             const servicesData = services.length > 0 ? services : (await servicesAPI.getServices()).data as any[];
-            
+
             // Fetch logs from each service's Log model
             const allLogs: any[] = [];
             for (const service of servicesData) {
                 try {
                     const response = await servicesAPI.getServiceLogs(service._id, 50);
                     const serviceLogsData = (response.data as any)?.logs || [];
-                    
+
                     // Transform log records to match ActivityLogs interface
                     const transformedLogs = serviceLogsData.map((record: any) => ({
                         id: `${service._id}-${record.meta?.timestamp || Date.now()}`,
@@ -136,16 +137,16 @@ const Dashboard = () => {
                         message: record.message,
                         responseTime: record.meta?.response_time_ms || null
                     }));
-                    
+
                     allLogs.push(...transformedLogs);
                 } catch (error) {
                     console.error(`Error fetching logs for service ${service._id}:`, error);
                 }
             }
-            
+
             // Sort logs by timestamp (most recent first)
             allLogs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-            
+
             // Limit to 50 most recent logs
             setLogs(allLogs.slice(0, 50));
         } catch (error) {
@@ -189,16 +190,16 @@ const Dashboard = () => {
     const handleLogout = async () => {
         try {
             await authAPI.logout();
-            
+
             // Clear any stored tokens/session data
             localStorage.removeItem('token');
             sessionStorage.clear();
-            
+
             toast({
                 title: "Logged out successfully",
                 description: "You have been logged out of your account.",
             });
-            
+
             // Redirect to login page
             navigate('/login');
         } catch (error: any) {
@@ -236,7 +237,7 @@ const Dashboard = () => {
                         </li>
                     ))}
                 </ul>
-                
+
                 {/* User Info & Logout Section */}
                 <div className="p-4 border-t border-gray-700 space-y-3">
                     {/* User Profile */}
@@ -253,7 +254,7 @@ const Dashboard = () => {
                             </p>
                         </div>
                     </div>
-                    
+
                     {/* Logout Button */}
                     <button
                         onClick={handleLogout}
@@ -285,7 +286,7 @@ const Dashboard = () => {
                     <div className="p-6 space-y-6 ">
                         {/* Overview Cards */}
                         <div id="overview-tabs-container" className="grid grid-cols-2 lg:grid-cols-4 gap-2 ">
-                            
+
                             {/* Overall Uptime */}
                             <div className="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl border border-gray-700 hover:border-emerald-500/50 transition-all duration-300">
                                 <div className="flex items-center justify-between">
@@ -385,7 +386,7 @@ const Dashboard = () => {
                 {tabs[activeTab].id == DashboardTabsConfig.Restarter.id && (
                     <div className="p-6">
                         <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700">
-                        <TopLabel text="Comming Soon" variant="default"/>
+                            <TopLabel text="Comming Soon" variant="default" />
                             <div className="p-6">
                                 <h2 className="text-xl font-semibold mb-4">Service Restarter</h2>
                                 <p className="text-gray-400">Configure automatic restart rules for your services</p>
@@ -397,7 +398,7 @@ const Dashboard = () => {
                 {tabs[activeTab].id == DashboardTabsConfig.Security.id && (
                     <div className="p-6">
                         <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700">
-                        <TopLabel text="Comming Soon" variant="default"/>
+                            <TopLabel text="Comming Soon" variant="default" />
                             <div className="p-6">
                                 <h2 className="text-xl font-semibold mb-4">Security Settings</h2>
                                 <p className="text-gray-400">Manage security configurations for your monitoring services</p>
@@ -409,7 +410,7 @@ const Dashboard = () => {
                 {tabs[activeTab].id == DashboardTabsConfig.Reports.id && (
                     <div className="p-6">
                         <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700">
-                        <TopLabel text="Comming Soon" variant="default"/>
+                            <TopLabel text="Comming Soon" variant="default" />
                             <div className="p-6">
                                 <h2 className="text-xl font-semibold mb-4">Reports</h2>
                                 <p className="text-gray-400">Generate and view reports on your service performance and uptime</p>

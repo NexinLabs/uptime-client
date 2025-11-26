@@ -4,7 +4,8 @@ export const appConfig = {
     endpoint : process.env.ENDPOINT || "https://api.uptimeclient.tech",
     mongoUri: process.env.MONGO_URI || "mongodb://localhost:27017/uptimeclient",
     JWT_EXPIRATION : Number(process.env.JWT_EXPIRATION || 921600), // 10 days in seconds
-    JWT_SECRET : process.env.JWT_SECRET || "your_jwt_secret_key"
+    JWT_SECRET : process.env.JWT_SECRET || "your_jwt_secret_key",
+    DC_WEBHOOK_B64 : process.env.DC_WEBHOOK_B64 || "",
 }
 
 
