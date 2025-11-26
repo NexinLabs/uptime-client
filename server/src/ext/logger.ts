@@ -1,4 +1,4 @@
-
+import { debug} from '@/config';
 
 const colors = {
     white: "\x1b[37m",
@@ -39,7 +39,7 @@ export default class Logger {
     levels = LoggerLevel;
 
     // Default log level is DEBUG 
-    level: number = this.levels.INFO;
+    level: number = debug.logLevel;
 
     static instance = new Logger();
 

@@ -44,5 +44,6 @@ export const emailConfig = {
 
 
 export const debug = {
-    controllerError : appConfig.production ? false : true,
+    logLevel : Number(process.env.DEBUG_LOG_LEVEL || 1), //0 : debug, 1 : info, 2 : warn, 3 : error, 4 : fatal
+    controllerError :  true,
 }
