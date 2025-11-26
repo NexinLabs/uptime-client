@@ -10,7 +10,7 @@
     },
     "keywords": [],
     "author": "https://github.com/hunter87ff",
-    "license": "ISC",
+    "license": "GPL-3.0-only",
     "type": "commonjs",
     "description": "",
     "devDependencies": {
