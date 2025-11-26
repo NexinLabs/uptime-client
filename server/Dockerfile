@@ -6,8 +6,11 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
+# Install build dependencies for native modules
+#RUN apk add --no-cache build-base python3
+
 # Install all dependencies (including dev dependencies for building)
-RUN npm ci
+RUN npm install 
 
 # Copy source code
 COPY . .
