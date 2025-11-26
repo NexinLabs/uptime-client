@@ -127,7 +127,11 @@ export default class AuthController {
 
             const _email = EmailTemplates.verifyAccount(name || 'There', link);
 
-            await sendMailWithHTML(email, email, _email.subject, _email.html);
+            const mailResult = await sendMailWithHTML(email, email, _email.subject, _email.html);
+            if (!mailResult.success) {
+                tokens.verifySignup.delete(emailVerificationToken);
+                return res.handler.error(res, "Failed to send verification email. Please try again later.");
+            }
             res.handler.created(res, "Check your email for verification link.");
         } catch (error) {
             res.handler.error(res, "Error creating user", error);
@@ -250,8 +254,11 @@ export default class AuthController {
             const link = `${appConfig.endpoint}/auth/reset-password?token=${resetToken}`;
 
             const _email = EmailTemplates.forgotPassword(user.name || 'There', link);
-            sendMailWithHTML(email, email, _email.subject, _email.html);
-
+            const mailResult = await sendMailWithHTML(email, email, _email.subject, _email.html);
+            if (!mailResult.success) {
+                tokens.resetPassword.delete(resetToken);
+                return res.handler.error(res, "Failed to send password reset email. Please try again later.");
+            }
             res.handler.success(res, "Check your email for password reset link.");
         } catch (error) {
             res.handler.error(res, "Error sending password reset link", error);
@@ -279,7 +286,11 @@ export default class AuthController {
             const link = `${appConfig.endpoint}/auth/login?token=${loginToken}`;
 
             const _email = EmailTemplates.loginWithLink(user.name || 'There', link);
-            sendMailWithHTML(email, email, _email.subject, _email.html);
+            const mailResult = await sendMailWithHTML(email, email, _email.subject, _email.html);
+            if (!mailResult.success) {
+                tokens.login.delete(loginToken);
+                return res.handler.error(res, "Failed to send login email. Please try again later.");
+            }
             res.handler.success(res, "Check your email for login link.");
         } catch (error) {
             res.handler.error(res, "Error sending login link", error);
