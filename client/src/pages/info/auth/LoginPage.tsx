@@ -32,10 +32,9 @@ const LoginPage = () => {
             }
         } else {
             try {
-                console.log('Attempting login with:', { email }); // Debug log
                 await login(email, password);
                 setSuccess('Login successful! Redirecting...');
-                console.log('Login successful, should redirect now'); // Debug log
+                
             } catch (err: any) {
                 console.error('Login error:', err); // Debug log
                 setError(err.message || 'Login failed. Please try again.');

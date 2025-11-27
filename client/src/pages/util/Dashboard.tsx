@@ -94,7 +94,12 @@ const Dashboard = () => {
             }
         } catch (error) {
             console.error("Error fetching user info:", error);
-            navigate('/login');
+            navigate('/login', {
+                state: {
+                    from : '/dashboard'
+                },
+                replace: true
+            });
         }
     }, [navigate]);
 
@@ -178,17 +183,27 @@ const Dashboard = () => {
     const handleRefresh = useCallback(async () => {
         if (isFetching.current) return;
         isFetching.current = true;
-        
+
         try {
-            const servicesData = await fetchServices();
-            await Promise.all([
-                fetchOverview(),
-                fetchLogs(servicesData)
-            ]);
+            const currentTabId = tabs[activeTab]?.id;
+
+            switch (currentTabId) {
+                case DashboardTabsConfig.Monitoring.id:
+                    await fetchServices();
+                    await fetchOverview();
+                    break;
+                case DashboardTabsConfig.ServerLogs.id: {
+                    const servicesData = services.length > 0 ? services : await fetchServices();
+                    await fetchLogs(servicesData);
+                    break;
+                }
+                default:
+                    break;
+            }
         } finally {
             isFetching.current = false;
         }
-    }, [fetchServices, fetchOverview, fetchLogs]);
+    }, [activeTab, tabs, services, fetchServices, fetchOverview, fetchLogs]);
 
     const handleLogout = async () => {
         try {
@@ -260,7 +275,10 @@ const Dashboard = () => {
                 <div className="p-4 border-t border-gray-700 space-y-3">
                     {/* User Profile */}
                     <div
-                        onClick={() => navigate('/profile')}
+                        onClick={() => navigate('/profile', {
+                            state: { fromDashboard: true },
+                            preventScrollReset: false
+                        })}
                         className="flex items-center gap-3 px-3 py-2 bg-gray-700/50 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors duration-300"
                     >
                         <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center">

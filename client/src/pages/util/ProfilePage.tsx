@@ -66,7 +66,10 @@ const ProfilePage = () => {
                 description: "Failed to load profile. Please try again.",
                 variant: "destructive",
             });
-            navigate("/login");
+            navigate("/login", {
+                state: { from: "/profile" },
+                replace: true,
+            });
         } finally {
             setLoading(false);
         }
