@@ -134,6 +134,9 @@ export const servicesAPI = {
     getRecentLogs: (limit?: number) =>
         apiClient.get(`/services/logs/recent${limit ? `?limit=${limit}` : ''}`),
 
+    getAllLogs: (limit?: number) =>
+        apiClient.get(`/services/logs${limit ? `?limit=${limit}` : ''}`),
+
     getServiceLogs: (serviceId: string, limit?: number) =>
         apiClient.get(`/services/${serviceId}/logs${limit ? `?limit=${limit}` : ''}`),
 };

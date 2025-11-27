@@ -257,6 +257,32 @@ export default class ServiceController {
     }
 
     /**
+     * returns detailed logs for all services of the user
+     * @route GET /services/logs
+     * @access Private
+     */
+    static async getAllServiceLogs(req: Request, res: Response) {
+        try {
+            if (!req.user?._id) {
+                return res.handler.unAuthorized(res);
+            }
+            const limit = parseInt(req.query.limit as string) || 100;
+
+            // Get all services for the user
+            const all_logs = await res.models.Log.find({ user: req.user._id }).lean().limit(limit);
+            const logRecords = all_logs.map((logDoc: any) => logDoc.records).flat();
+            res.handler.success(res, "All service logs retrieved successfully", {
+                logs: logRecords,
+                total: logRecords.length
+
+            });
+        } catch (error) {
+            res.handler.internalServerError(res, "Error retrieving all service logs", error);
+        }
+    }
+            
+
+    /**
      * returns detailed logs for a specific service
      * @route GET /services/:serviceId/logs
      * @access Private

@@ -6,6 +6,7 @@ serviceRouter.get("/", serviceController.getServices);
 serviceRouter.post("/", serviceController.createService);
 serviceRouter.get("/overview/stats", serviceController.getOverview);
 serviceRouter.get("/logs/recent", serviceController.getRecentLogs);
+serviceRouter.get("/logs", serviceController.getAllServiceLogs);
 serviceRouter.get("/:serviceId", serviceController.getService);
 serviceRouter.get("/:serviceId/logs", serviceController.getServiceLogs);
 serviceRouter.put("/:serviceId", serviceController.updateService);

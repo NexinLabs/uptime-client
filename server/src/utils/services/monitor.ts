@@ -112,7 +112,7 @@ class ServiceMonitor {
                 method: service.method,
                 url: service.url,
                 headers: service.headers || {},
-                timeout: 30000, // 30 second timeout
+                timeout: 20000, // 20 second timeout
                 validateStatus: () => true, // Don't throw on any status code
             };
 
@@ -183,12 +183,7 @@ class ServiceMonitor {
     /**
      * Log service error to database
      */
-    private static async logServiceError(
-        service: IService,
-        statusCode: number,
-        message: string,
-        responseTime: number
-    ): Promise<void> {
+    private static async logServiceError(service: IService, statusCode: number, message: string, responseTime: number) {
         try {
             const logRecord = {
                 method: service.method,
@@ -206,6 +201,7 @@ class ServiceMonitor {
             await models.Log.findOneAndUpdate(
                 { service: service._id },
                 {
+                    user: service.owner,
                     $push: {
                         records: {
                             $each: [logRecord],
@@ -224,11 +220,7 @@ class ServiceMonitor {
     /**
      * Log service success to database
      */
-    private static async logServiceSuccess(
-        service: IService,
-        statusCode: number,
-        responseTime: number
-    ): Promise<void> {
+    private static async logServiceSuccess(service: IService, statusCode: number, responseTime: number) {
         try {
             const logRecord = {
                 method: service.method,
@@ -246,6 +238,7 @@ class ServiceMonitor {
             await models.Log.findOneAndUpdate(
                 { service: service._id },
                 {
+                    user: service.owner,
                     $push: {
                         records: {
                             $each: [logRecord],

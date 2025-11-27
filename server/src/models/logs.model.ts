@@ -1,10 +1,12 @@
 import { Schema, model, Document, Types } from 'mongoose';
 
 interface ILogRecord {
+    _id?: Types.ObjectId;
     method: string;
     level: 'info' | 'warning' | 'error';
     message: string;
     status_code?: number;
+    user : Types.ObjectId;
     meta?: Record<string, any>;
 }
 
@@ -32,6 +34,7 @@ const LogRecordSchema = new Schema({
         type: String,
         required: true
     },
+    
     meta: {
         type: Schema.Types.Mixed,
         default: {}
@@ -47,6 +50,11 @@ const LogSchema: Schema = new Schema({
         type: Schema.Types.ObjectId, 
         ref: 'Service', 
         required: [true, "Service is required"],
+    },
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: [true, "User is required"],
     },
     records: [LogRecordSchema],
 }, {

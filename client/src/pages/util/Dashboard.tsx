@@ -118,36 +118,25 @@ const Dashboard = () => {
         }
     }, []);
 
-    const fetchLogs = useCallback(async (servicesData?: any[]) => {
+    const fetchLogs = useCallback(async () => {
         try {
-            const servicesList = servicesData || (await servicesAPI.getServices()).data as any[];
+            const response = await servicesAPI.getAllLogs(50);
+            const logsData = (response.data as any)?.logs || [];
 
-            const allLogs: any[] = [];
-            for (const service of servicesList) {
-                try {
-                    const response = await servicesAPI.getServiceLogs(service._id, 50);
-                    const serviceLogsData = (response.data as any)?.logs || [];
+            const transformedLogs = logsData.map((record: any) => ({
+                id: `${record.user}-${record.meta?.timestamp || Date.now()}`,
+                serviceName: record.meta?.url || 'Unknown',
+                url: record.meta?.url || '',
+                method: record.method,
+                status: record.level === 'info' ? 'success' : record.level === 'error' ? 'failed' : 'pending',
+                statusCode: record.status_code || 0,
+                timestamp: record.meta?.timestamp || new Date().toISOString(),
+                message: record.message,
+                responseTime: record.meta?.response_time_ms || null
+            }));
 
-                    const transformedLogs = serviceLogsData.map((record: any) => ({
-                        id: `${service._id}-${record.meta?.timestamp || Date.now()}`,
-                        serviceName: service.name || service.url,
-                        url: record.meta?.url || service.url,
-                        method: record.method,
-                        status: record.level === 'info' ? 'success' : record.level === 'error' ? 'failed' : 'pending',
-                        statusCode: record.status_code || 0,
-                        timestamp: record.meta?.timestamp || new Date().toISOString(),
-                        message: record.message,
-                        responseTime: record.meta?.response_time_ms || null
-                    }));
-
-                    allLogs.push(...transformedLogs);
-                } catch (error) {
-                    console.error(`Error fetching logs for service ${service._id}:`, error);
-                }
-            }
-
-            allLogs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-            setLogs(allLogs.slice(0, 50));
+            transformedLogs.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+            setLogs(transformedLogs.slice(0, 50));
         } catch (error) {
             console.error("Error fetching logs:", error);
         }
@@ -175,9 +164,9 @@ const Dashboard = () => {
     };
 
     const handleServiceSuccess = useCallback(async () => {
-        const servicesData = await fetchServices();
+        await fetchServices();
         fetchOverview();
-        fetchLogs(servicesData);
+        fetchLogs();
     }, [fetchServices, fetchOverview, fetchLogs]);
 
     const handleRefresh = useCallback(async () => {
@@ -192,18 +181,16 @@ const Dashboard = () => {
                     await fetchServices();
                     await fetchOverview();
                     break;
-                case DashboardTabsConfig.ServerLogs.id: {
-                    const servicesData = services.length > 0 ? services : await fetchServices();
-                    await fetchLogs(servicesData);
+                case DashboardTabsConfig.ServerLogs.id:
+                    await fetchLogs();
                     break;
-                }
                 default:
                     break;
             }
         } finally {
             isFetching.current = false;
         }
-    }, [activeTab, tabs, services, fetchServices, fetchOverview, fetchLogs]);
+    }, [activeTab, tabs, fetchServices, fetchOverview, fetchLogs]);
 
     const handleLogout = async () => {
         try {
@@ -240,10 +227,10 @@ const Dashboard = () => {
 
             try {
                 await fetchUserInfo();
-                const servicesData = await fetchServices();
                 await Promise.all([
+                    fetchServices(),
                     fetchOverview(),
-                    fetchLogs(servicesData)
+                    fetchLogs()
                 ]);
             } finally {
                 isFetching.current = false;
