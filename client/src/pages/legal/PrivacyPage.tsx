@@ -25,7 +25,7 @@ const PrivacyPage = () => {
         },
         {
             title: "Your Rights",
-            content: "You have the right to access, correct, or delete your personal information. You can also object to or restrict certain processing of your data. To exercise these rights, please contact us at privacy@UptimeClient.com. We will respond to your request within 30 days."
+            content: "You have the right to access, correct, or delete your personal information. You can also object to or restrict certain processing of your data. To exercise these rights, please contact us at support@uptimeclient.tech. We will respond to your request within 30 days."
         },
         {
             title: "Cookies and Tracking",
@@ -99,8 +99,8 @@ const PrivacyPage = () => {
                         If you have any questions about this Privacy Policy or our data practices, please contact us:
                     </p>
                     <div className="space-y-2 text-gray-300">
-                        <p>📧 Email: privacy@UptimeClient.com</p>
-                        <p>🌐 Website: www.UptimeClient.com</p>
+                        <p>📧 Email: support@uptimeclient.tech</p>
+                        <p>🌐 Website: uptimeclient.tech</p>
                     </div>
                 </motion.div>
             </div>

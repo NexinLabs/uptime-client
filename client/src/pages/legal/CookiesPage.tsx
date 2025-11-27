@@ -155,8 +155,8 @@ const CookiesPage = () => {
                         If you have any questions about our use of cookies, please contact us:
                     </p>
                     <div className="space-y-2 text-gray-300">
-                        <p>📧 Email: privacy@UptimeClient.com</p>
-                        <p>🌐 Website: www.UptimeClient.com</p>
+                        <p>📧 Email: support@uptimeclient.tech</p>
+                        <p>🌐 Website: uptimeclient.tech</p>
                     </div>
                 </motion.div>
             </div>

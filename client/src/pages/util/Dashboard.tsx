@@ -241,7 +241,7 @@ const Dashboard = () => {
                 {/* User Info & Logout Section */}
                 <div className="p-4 border-t border-gray-700 space-y-3">
                     {/* User Profile */}
-                    <div 
+                    <div
                         onClick={() => navigate('/profile')}
                         className="flex items-center gap-3 px-3 py-2 bg-gray-700/50 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors duration-300"
                     >

@@ -119,7 +119,7 @@ const SecurityPage = () => {
                         If you discover a security vulnerability, please report it to us:
                     </p>
                     <div className="space-y-2 text-gray-300">
-                        <p>📧 Email: security@UptimeClient.com</p>
+                        <p>📧 Email: support@uptimeclient.tech</p>
                         <p>🔒 PGP Key: Available upon request</p>
                     </div>
                 </motion.div>
