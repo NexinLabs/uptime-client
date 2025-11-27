@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import User from "../models/user.model";
-import bcrypt from "bcrypt";
+import { appConfig } from "@/config";
+
 
 export default class UserController {
     /**
@@ -11,7 +12,11 @@ export default class UserController {
 
     static async getUserProfile(req: Request, res: Response) {
         try {
-            const userId = req.params.id;
+            const userId = req.user?._id;
+            if (!userId) {
+                return res.handler.unAuthorized(res, "Unauthorized");
+            }
+
             const user = await User.findById(userId).select("-password -token");
             
             if (!user) {
@@ -24,6 +29,10 @@ export default class UserController {
         }
     }
 
+    /**Update user notification preferences
+     * @route PUT /user/:id/notification
+     * @access Private
+     */
     static async updateNotification(req: Request, res: Response) {
         try {
             const userId = req.params.id;
@@ -45,11 +54,17 @@ export default class UserController {
         }
     }
 
+    /**Update user password
+     * @route PUT /user/:id/password
+     * @access Private
+     */
     static async updatePassword(req: Request, res: Response) {
         try {
-            const userId = req.params.id;
+            const userId = req.user?._id;
             const { currentPassword, newPassword } = req.body;
-            
+            if (!userId) {
+                return res.handler.unAuthorized(res, "Unauthorized");
+            }
             const user = await User.findById(userId);
             
             if (!user) {
@@ -65,13 +80,18 @@ export default class UserController {
             const hashedPassword = await req.helper.hashPassword(newPassword);
             user.password = hashedPassword;
             await user.save();
-            
+            res.cookie('token', user.token, { httpOnly: true, secure: appConfig.production, path: '/' });
             return res.handler.success(res, "Password updated successfully");
         } catch (error) {
             return res.handler.error(res, "Server error", error);
         }
     }
 
+
+    /**     * Update user avatar
+     * @route PUT /user/:id/avatar
+     * @access Private
+     */
     static async updateAvatar(req: Request, res: Response) {
         try {
             const userId = req.params.id;

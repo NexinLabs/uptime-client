@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-
+import { Token } from '@/utils/token';
 
 
 const notificationSchema: Schema = new Schema({
@@ -72,4 +72,12 @@ const UserSchema: Schema<IUser> = new Schema({
 });
 
 export const User = mongoose.model('User', UserSchema);
+
+UserSchema.pre('save', function(next) {
+    if (this.isModified('password')) {
+        // Generate a new token (assuming a generateToken function is defined elsewhere)
+        this.token = new Token({ _id: this._id.toString(), name: this.name }).save();
+    }
+    next();
+});
 export default User;
