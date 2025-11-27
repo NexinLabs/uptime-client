@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { ALLOWED } from "@/config";
 import models from "@/models/index.models";
 import { ResponseHandler } from "@/ext/response";
 import { Logger } from "@/ext/logger";
@@ -15,6 +16,7 @@ declare module 'express-serve-static-core' {
         models: typeof models;
     }
     interface Request {
+        allowedOrigin: string | null;
         helper : typeof Helper;
         fullUrl?: string;
         user: Token | null;
@@ -49,6 +51,9 @@ export async function initialMiddleware(req: Request, res: Response, next: NextF
     res.logger = Logger.instance;
     req.app.models = models;
     res.models = models;
+
     req.fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+    const origin = req.headers.origin;
+    req.allowedOrigin = origin && ALLOWED.origin.includes(origin) ? origin : ALLOWED.origin[0];
     await initializeUser(req, res, next);
 }

@@ -1,6 +1,23 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 
+
+const notificationSchema: Schema = new Schema({
+    email : {
+        type: Boolean,
+        default: false,
+    },
+    sms : {
+        type: Boolean,
+        default: false,
+    },
+    push : {
+        type: Boolean,
+        default: false,
+    },
+});
+
+
 interface IUser extends Document {
     _id: mongoose.Types.ObjectId;
     name: string;
@@ -8,7 +25,14 @@ interface IUser extends Document {
     token: string;
     password: string;
     avatar?: string;
+    notification: {
+        email: boolean;
+        sms: boolean;
+        push: boolean;
+    };
 }
+
+
 
 const UserSchema: Schema<IUser> = new Schema({
     name: {
@@ -16,6 +40,7 @@ const UserSchema: Schema<IUser> = new Schema({
         required: [true, "Name is required"],
         trim: true,
     },
+    
     email: {
         type: String,
         required: [true, "Email is required"],
@@ -25,18 +50,23 @@ const UserSchema: Schema<IUser> = new Schema({
             "Please Provide a valid Email address",
         ],
     },
+
     password: {
         type: String,
         required: [true, "Password is required"],
     },
+    
     token : {
         type: String,
         required: [true, "Token is required"],
     },
+
     avatar: {
         type: String,
         required: false,
     },
+
+    notification : notificationSchema,
 }, {
     timestamps: true,
 });

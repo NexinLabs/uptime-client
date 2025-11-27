@@ -137,3 +137,22 @@ export const servicesAPI = {
     getServiceLogs: (serviceId: string, limit?: number) =>
         apiClient.get(`/services/${serviceId}/logs${limit ? `?limit=${limit}` : ''}`),
 };
+
+
+// User API functions
+export const userAPI = {
+    getProfile: (userId: string) =>
+        apiClient.get(`/user/${userId}`),
+
+    updateNotification: (userId: string, notification: { email: boolean; sms: boolean; push: boolean }) =>
+        apiClient.put(`/user/${userId}/notification`, notification),
+
+    updatePassword: (userId: string, currentPassword: string, newPassword: string) =>
+        apiClient.put(`/user/${userId}/password`, { currentPassword, newPassword }),
+
+    updateAvatar: (userId: string, avatar: string) =>
+        apiClient.put(`/user/${userId}/avatar`, { avatar }),
+
+    deleteAccount: (userId: string) =>
+        apiClient.delete(`/user/${userId}`),
+};

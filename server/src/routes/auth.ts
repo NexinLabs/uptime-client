@@ -11,7 +11,7 @@ authRouter.get("/login",  AuthController.login);
 authRouter.post("/signup", mailLimit, AuthController.signup);
 authRouter.post("/logout", AuthController.logout);
 authRouter.get("/verify-signup", AuthController.verifySignup);
-authRouter.get("/reset-password", AuthController.resetPassword);
+authRouter.post("/reset-password", AuthController.resetPassword);
 authRouter.post("/forgot-password", mailLimit, AuthController.forgotPassword);
 authRouter.post("/send-magic-link", mailLimit, AuthController.sendLoginLink);
 

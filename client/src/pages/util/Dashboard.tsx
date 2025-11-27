@@ -241,7 +241,10 @@ const Dashboard = () => {
                 {/* User Info & Logout Section */}
                 <div className="p-4 border-t border-gray-700 space-y-3">
                     {/* User Profile */}
-                    <div className="flex items-center gap-3 px-3 py-2 bg-gray-700/50 rounded-lg">
+                    <div 
+                        onClick={() => navigate('/profile')}
+                        className="flex items-center gap-3 px-3 py-2 bg-gray-700/50 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors duration-300"
+                    >
                         <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center">
                             <User className="h-5 w-5 text-white" />
                         </div>
@@ -250,7 +253,7 @@ const Dashboard = () => {
                                 {user?.name || 'Loading...'}
                             </p>
                             <p className="text-xs text-gray-400">
-                                Account
+                                View Profile
                             </p>
                         </div>
                     </div>

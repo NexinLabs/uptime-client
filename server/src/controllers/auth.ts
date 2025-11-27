@@ -250,8 +250,12 @@ export default class AuthController {
             
             // save reset password token temporarily
             tokens.resetPassword.set(resetToken, email);
-            
-            const link = `${appConfig.endpoint}/auth/reset-password?token=${resetToken}`;
+
+            if (!req.allowedOrigin) {
+                return res.handler.error(res, "Invalid request origin");
+            }
+
+            const link = `${req.allowedOrigin}/reset-password?token=${resetToken}`;
 
             const _email = EmailTemplates.forgotPassword(user.name || 'There', link);
             const mailResult = await sendMailWithHTML(email, email, _email.subject, _email.html);
