@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { DashboardTabsConfig } from "@/config";
 import { servicesAPI, authAPI } from "@/lib/api";
 import { ServiceFormDialog } from "@/components/services/ServiceFormDialog";
@@ -11,12 +11,12 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 
 import { Menu, Target, ListRestart, Logs, Activity, Clock, Globe, AlertTriangle, Plus, RefreshCw, LogOut, User } from "lucide-react";
-// import { Skeleton } from "@/components/ui/skeleton";
 
 const Dashboard = () => {
     const navigate = useNavigate();
-    const params = useParams();
     const { toast } = useToast();
+    const isInitialMount = useRef(true);
+    const isFetching = useRef(false);
 
     // User state
     const [user, setUser] = useState<{ name: string; _id: string } | null>(null);
@@ -65,24 +65,24 @@ const Dashboard = () => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedService, setSelectedService] = useState<any>(null);
 
-    async function windowManage() {
-        window.onresize = () => {
+    useEffect(() => {
+        const handleResize = () => {
             setisMobile(window.innerWidth < 768);
         };
-    }
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
-    const fetchOverview = async () => {
+    const fetchOverview = useCallback(async () => {
         try {
             const response = await servicesAPI.getOverview();
-            console.log('Overview response:', response);
             setOverview(response.data);
         } catch (error) {
             console.error("Error fetching overview:", error);
         }
-    };
+    }, []);
 
-
-    const fetchUserInfo = async () => {
+    const fetchUserInfo = useCallback(async () => {
         try {
             const response = await authAPI.authenticate();
             const auth_data: any = response.data;
@@ -94,38 +94,35 @@ const Dashboard = () => {
             }
         } catch (error) {
             console.error("Error fetching user info:", error);
-            // If authentication fails, redirect to login
             navigate('/login');
         }
-    };
+    }, [navigate]);
 
-    const fetchServices = async () => {
+    const fetchServices = useCallback(async () => {
         try {
             setLoading(true);
             const response = await servicesAPI.getServices();
-            console.log('Services response:', response);
             const servicesData = response.data as any[] || [];
             setServices(servicesData);
+            return servicesData;
         } catch (error) {
             console.error("Error fetching services:", error);
+            return [];
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const fetchLogs = async () => {
+    const fetchLogs = useCallback(async (servicesData?: any[]) => {
         try {
-            // Fetch all services first if not already loaded
-            const servicesData = services.length > 0 ? services : (await servicesAPI.getServices()).data as any[];
+            const servicesList = servicesData || (await servicesAPI.getServices()).data as any[];
 
-            // Fetch logs from each service's Log model
             const allLogs: any[] = [];
-            for (const service of servicesData) {
+            for (const service of servicesList) {
                 try {
                     const response = await servicesAPI.getServiceLogs(service._id, 50);
                     const serviceLogsData = (response.data as any)?.logs || [];
 
-                    // Transform log records to match ActivityLogs interface
                     const transformedLogs = serviceLogsData.map((record: any) => ({
                         id: `${service._id}-${record.meta?.timestamp || Date.now()}`,
                         serviceName: service.name || service.url,
@@ -144,15 +141,12 @@ const Dashboard = () => {
                 }
             }
 
-            // Sort logs by timestamp (most recent first)
             allLogs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-
-            // Limit to 50 most recent logs
             setLogs(allLogs.slice(0, 50));
         } catch (error) {
             console.error("Error fetching logs:", error);
         }
-    };
+    }, []);
 
     const handleCreateService = () => {
         setSelectedService(null);
@@ -175,17 +169,26 @@ const Dashboard = () => {
         }
     };
 
-    const handleServiceSuccess = () => {
-        fetchServices();
+    const handleServiceSuccess = useCallback(async () => {
+        const servicesData = await fetchServices();
         fetchOverview();
-        fetchLogs();
-    };
+        fetchLogs(servicesData);
+    }, [fetchServices, fetchOverview, fetchLogs]);
 
-    const handleRefresh = () => {
-        fetchServices();
-        fetchOverview();
-        fetchLogs();
-    };
+    const handleRefresh = useCallback(async () => {
+        if (isFetching.current) return;
+        isFetching.current = true;
+        
+        try {
+            const servicesData = await fetchServices();
+            await Promise.all([
+                fetchOverview(),
+                fetchLogs(servicesData)
+            ]);
+        } finally {
+            isFetching.current = false;
+        }
+    }, [fetchServices, fetchOverview, fetchLogs]);
 
     const handleLogout = async () => {
         try {
@@ -213,15 +216,30 @@ const Dashboard = () => {
     };
 
     useEffect(() => {
-        windowManage();
-        fetchUserInfo();
-        fetchOverview();
-        fetchServices();
-        fetchLogs();
-    }, [params]);
+        if (!isInitialMount.current) return;
+        isInitialMount.current = false;
+
+        const initializeDashboard = async () => {
+            if (isFetching.current) return;
+            isFetching.current = true;
+
+            try {
+                await fetchUserInfo();
+                const servicesData = await fetchServices();
+                await Promise.all([
+                    fetchOverview(),
+                    fetchLogs(servicesData)
+                ]);
+            } finally {
+                isFetching.current = false;
+            }
+        };
+
+        initializeDashboard();
+    }, [fetchUserInfo, fetchServices, fetchOverview, fetchLogs]);
 
     return (
-        <div className="container flex-row flex min-w-screen min-h-screen">
+        <div className="flex min-h-screen w-full overflow-x-hidden">
             <div id="sidebar" className={`fixed text-white overflow-hidden transition-all duration-200 z-10 h-screen bg-gray-800 ${isSidebarOpen || !isMobile ? 'w-72' : 'w-0'} flex flex-col`}>
                 <div className="header bg-emerald-700 p-4">
                     <h2 className="text-2xl font-bold cursor-pointer" onClick={() => navigate('/')}>UptimeClient</h2>
@@ -269,7 +287,7 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            <div id="content" className={`${!isMobile && 'ml-72 max-w-[calc(100vw-288px)'} flex-1  min-h-screen bg-gray-900 text-white `}>
+            <div id="content" className={`${!isMobile ? 'ml-72' : ''} flex-1 min-h-screen bg-gray-900 text-white w-full overflow-x-hidden`}>
                 <div className="flex flex-row justify-between items-center bg-gray-800 p-4">
                     <h2 className="text-2xl font-bold">{tabs[activeTab]?.name}</h2>
                     <div className="flex items-center gap-2">
@@ -288,7 +306,7 @@ const Dashboard = () => {
                 {tabs[activeTab].id == DashboardTabsConfig.Monitoring.id && (
                     <div className="p-6 space-y-6 ">
                         {/* Overview Cards */}
-                        <div id="overview-tabs-container" className="grid grid-cols-2 lg:grid-cols-4 gap-2 ">
+                        <div id="overview-tabs-container" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
 
                             {/* Overall Uptime */}
                             <div className="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl border border-gray-700 hover:border-emerald-500/50 transition-all duration-300">
