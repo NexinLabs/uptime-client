@@ -4,12 +4,13 @@ import { appConfig } from "@/config";
 
 
 export default class UserController {
+    static deleteUserTokens = new Map<string, string>();
+
     /**
      * Get user profile by ID
-     * @route GET /user/:id
+     * @route GET /user
      * @access Private
      */
-
     static async getUserProfile(req: Request, res: Response) {
         try {
             const userId = req.user?._id;
@@ -30,14 +31,16 @@ export default class UserController {
     }
 
     /**Update user notification preferences
-     * @route PUT /user/:id/notification
+     * @route PUT /user/notification
      * @access Private
      */
     static async updateNotification(req: Request, res: Response) {
         try {
-            const userId = req.params.id;
+            const userId = req.user?._id;
             const { email, sms, push } = req.body;
-            
+            if (!userId) {
+                return res.handler.unAuthorized(res, "Unauthorized");
+            }
             const user = await User.findByIdAndUpdate(
                 userId,
                 { notification: { email, sms, push } },
@@ -94,7 +97,10 @@ export default class UserController {
      */
     static async updateAvatar(req: Request, res: Response) {
         try {
-            const userId = req.params.id;
+            const userId = req.user?._id;
+            if (!userId) {
+                return res.handler.unAuthorized(res, "Unauthorized");
+            }
             const { avatar } = req.body;
             
             const user = await User.findByIdAndUpdate(
@@ -113,16 +119,44 @@ export default class UserController {
         }
     }
 
+    /**Delete user account
+     * @route DELETE /user?token=
+     * @access Private
+     */
     static async deleteUser(req: Request, res: Response) {
         try {
-            const userId = req.params.id;
+            const userId = req.user?._id;
+            const token = req.query.token as string;
+
+            // Confirm deletion if token is provided
+            if (!userId) {
+                return res.handler.unAuthorized(res, "Unauthorized");
+            }
+
+            if (!UserController.deleteUserTokens.get(userId)) {
+                UserController.deleteUserTokens.set(userId, '');
+                res.handler.success(
+                    res,
+                    "Please confirm account deletion by sending the request again within 10 minutes.",
+                    {
+                        token : userId,
+                        note: "This is to prevent accidental deletions."
+                    }
+                )
+                return;
+            }
             
+            if (token !== userId || !token) {
+                return res.handler.badRequest(res, "Invalid deletion token. Please request deletion again.");
+            }
+
             const user = await User.findByIdAndDelete(userId);
             
             if (!user) {
                 return res.handler.notFound(res, "User not found");
             }
-            
+
+            UserController.deleteUserTokens.delete(userId);
             return res.handler.success(res, "User deleted successfully");
         } catch (error) {
             return res.handler.error(res, "Server error", error);
