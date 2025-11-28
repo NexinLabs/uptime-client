@@ -37,3 +37,8 @@ EXPOSE 3000
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
+
+
+# To build and run the Docker container:
+# docker build -t uptimeclient-client .
+# docker run -d -p 3000:3000 uptimeclient-client
