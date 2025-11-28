@@ -110,6 +110,9 @@ export const authAPI = {
 
     sendMagicLink: (email: string) =>
         apiClient.post('/auth/send-magic-link', { email }),
+
+    getGoogleAuthUrl: () =>
+        apiClient.get<{ url: string }>('/auth/google'),
 };
 
 
