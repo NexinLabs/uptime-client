@@ -4,8 +4,9 @@
     "description": "A Progressive Web App for monitoring uptime",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#000000",
-    "theme_color": "#000000",
+    "background_color": "#061a2b",
+    "theme_color": "#061a2b",
+    "orientation": "portrait-primary",
     "icons": [
         {
             "src": "/logo.png",
