@@ -43,6 +43,19 @@ export const emailConfig = {
 };
 
 
+export const oauthConfig = {
+    google: {
+        client_id: process.env.G_CLIENT_ID,
+        client_secret: process.env.G_CLIENT_SECRET,
+        token_url: `https://oauth2.googleapis.com/token`,
+        user_profile : "https://www.googleapis.com/oauth2/v3/userinfo",
+        redirect_uris: [ 
+            appConfig.endpoint + "/auth/callback/google"
+        ] 
+    },
+}
+
+
 export const debug = {
     logLevel : Number(process.env.DEBUG_LOG_LEVEL || 1), //0 : debug, 1 : info, 2 : warn, 3 : error, 4 : fatal
     controllerError :  true,
