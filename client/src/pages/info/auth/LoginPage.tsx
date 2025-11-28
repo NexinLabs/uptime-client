@@ -15,6 +15,7 @@ const LoginPage = () => {
     const [isMagicLinkMode, setIsMagicLinkMode] = useState(false);
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
     const { login, isLoading } = useAuth();
+    const [rememberMe, setRememberMe] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -32,9 +33,9 @@ const LoginPage = () => {
             }
         } else {
             try {
-                await login(email, password);
+                await login(email, password, rememberMe);
                 setSuccess('Login successful! Redirecting...');
-                
+
             } catch (err: any) {
                 console.error('Login error:', err); // Debug log
                 setError(err.message || 'Login failed. Please try again.');
@@ -110,6 +111,7 @@ const LoginPage = () => {
                         {!isMagicLinkMode && (
                             <div className="flex items-center">
                                 <input
+                                    onChange={(e) => setRememberMe(e.target.checked)}
                                     id="remember-me"
                                     name="remember-me"
                                     type="checkbox"

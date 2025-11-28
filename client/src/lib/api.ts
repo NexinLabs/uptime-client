@@ -12,6 +12,10 @@ class ApiClient {
     }
 
     private async request<T>(endpoint: string, options: any = {}): Promise<ApiResponse<T>> {
+        const _token = localStorage.getItem("token");
+        if(_token) {
+            axios.defaults.headers.common['Authorization'] = `Bearer ${_token}`;
+        }
         const config = {
             url: endpoint,
             headers: {

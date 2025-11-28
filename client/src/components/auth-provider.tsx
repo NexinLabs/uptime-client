@@ -13,7 +13,7 @@ interface AuthContextType {
     user: User | null;
     isLoading: boolean;
     isAuthenticated: boolean;
-    login: (email: string, password: string) => Promise<void>;
+    login: (email: string, password: string, rememberMe: boolean) => Promise<void>;
     logout: () => Promise<void>;
     checkAuth: () => Promise<void>;
 }
@@ -71,13 +71,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children,requireAuth 
         }
     };
 
-    const login = async (email: string, password: string) => {
+    const login = async (email: string, password: string, rememberMe: boolean = false) => {
         try {
             setIsLoading(true);
             const response = await authAPI.login(email, password);
-
-            console.log('Login API response:', response); // Debug log
-
             if (response.success) {
                 // After successful login, get user data from auth endpoint
                 try {
@@ -85,6 +82,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children,requireAuth 
                     if (authResponse.success && authResponse.data) {
                         const userData = (authResponse.data as any)?.user || authResponse.data;
                         setUser(userData as User);
+
+                        if (rememberMe) {
+                            const token = (response.data as any)?.token as string;
+                            token && localStorage.setItem('token', token);
+                        }
 
                         // Redirect to the page they were trying to access or dashboard
                         const from = location.state?.from || '/dashboard';
