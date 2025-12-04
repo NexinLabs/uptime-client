@@ -1,14 +1,64 @@
 <!doctype html>
 <html lang="en" class="html">
   <head>
-    <meta charset="UTF-8" />
+    <!--[ Meta for browser ]-->
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1'  />
+    <meta content='IE=edge' http-equiv='X-UA-Compatible' />
+    <meta name='apple-mobile-web-app-capable' content='yes'  />
+    <meta name='mobile-web-app-capable' content='yes'  />
+    <meta name='apple-mobile-web-app-status-bar-style' content='yes'  />
+    <meta name='apple-mobile-web-app-status-bar-style' content='black-translucent'  />
+
+    <!-- seo tags -->
+    <meta name="author" content="NexinLabs" />
+    <meta name="og:title" content="Uptime Client - Monitoring Tool" />
+    <meta name="og:description" content="Uptime Client is a monitoring tool designed to track the availability and performance of websites and services. It provides real-time alerts, detailed reports on downtime, and customizable checks for uptime monitoring." />
+    <meta name="description" content="Uptime Client is a monitoring tool designed to track the availability and performance of websites and services. It provides real-time alerts, detailed reports on downtime, and customizable checks for uptime monitoring." />
+    <meta name="keywords" content="Uptime Client, monitoring tool, website availability, performance tracking, real-time alerts, downtime reports, customizable checks" />
+    
+    <!-- favicon -->
     <link rel="icon" type="image/png" href="/logo.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- accessibility -->
+    <meta name="language" content="English" />
+    <meta name="distribution" content="Global" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="canonical" href="https://uptimeclient.tech" />
+
+    
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2259666992563048" crossorigin="anonymous"></script>
     <title>Uptime Client</title>
   </head>
-  <body>
+<body>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Uptime Client",
+        "description": "A monitoring tool designed to track the availability and performance of websites and services. It provides real-time alerts, detailed reports on downtime, and customizable checks for uptime monitoring.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Cross-platform",
+        "programmingLanguage": "JavaScript",
+        "author": {
+            "@type": "Organization",
+            "name": "NexinLabs"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "INR"
+        },
+        "featureList": [
+            "Real-time Monitoring",
+            "Alerts and Notifications",
+            "Detailed Reports",
+            "Customizable Checks",
+            "Multi-platform Support"
+        ]
+    }
+    </script>
     <div id="root" class="bg-gray-800"></div>
     <script type="module" src="./src/main.tsx"></script>
-  </body>
+</body>
 </html>
