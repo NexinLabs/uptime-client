@@ -42,7 +42,7 @@ const NavBar = () => {
                                 <div className="absolute inset-0 bg-indigo-400/20 blur-xl group-hover:bg-indigo-300/30 transition-all duration-300 rounded-full"></div>
                             </div>
                             <div className="flex flex-col">
-                                <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent group-hover:from-indigo-300 group-hover:to-purple-300 transition-all duration-300">
+                                <h2 className="text-2xl font-bold text-white transition-all duration-300">
                                     UptimeClient
                                 </h2>
                                 <span className="text-xs text-gray-400 group-hover:text-gray-300 transition-colors duration-300 flex items-center">

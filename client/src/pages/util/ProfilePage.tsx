@@ -45,7 +45,7 @@ const ProfilePage = () => {
 
     useEffect(() => {
         fetchUserProfile();
-    }, []);
+    });
 
     const fetchUserProfile = async () => {
         try {

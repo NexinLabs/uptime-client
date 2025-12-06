@@ -302,37 +302,37 @@ const LandingPage = () => {
                     <h2 className="text-3xl font-bold text-center mb-12 text-white">Why Choose Uptime Client?</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         <FeatureCard
-                            icon="⏱️"
+                            icon=""
                             title="Shorter Monitoring Intervals"
                             description="Check your services every 30 seconds for faster detection of downtime and issues, compared to competitors' longer intervals."
                             delay={0.1}
                         />
                         <FeatureCard
-                            icon="📈"
+                            icon=""
                             title="In-Depth & Advanced Analysis"
                             description="Get detailed performance metrics, response time breakdowns, error analysis, and historical trends for comprehensive insights."
                             delay={0.2}
                         />
                         <FeatureCard
-                            icon="👥"
+                            icon=""
                             title="User-Friendly Interface"
                             description="Intuitive dashboards, easy setup, and customizable alerts make monitoring accessible for everyone, from beginners to experts."
                             delay={0.3}
                         />
                         <FeatureCard
-                            icon="💰"
+                            icon=""
                             title="Affordable Rates"
                             description="Starting from just ₹79/month, with a lifetime free plan, our competitive pricing offers premium features without breaking the bank."
                             delay={0.4}
                         />
                         <FeatureCard
-                            icon="🔗"
+                            icon=""
                             title="Seamless Integrations"
                             description="Connect with Slack, Discord, webhooks, and more for instant notifications and automated workflows."
                             delay={0.5}
                         />
                         <FeatureCard
-                            icon="🌐"
+                            icon=""
                             title="Global Monitoring Network"
                             description="Monitor from multiple worldwide locations to ensure your service performs well globally."
                             delay={0.6}
@@ -349,19 +349,19 @@ const LandingPage = () => {
                     className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8"
                 >
                     <FeatureCard
-                        icon="⚡"
+                        icon=""
                         title="Real-time Monitoring"
                         description="Instant notifications and alerts when your website experiences downtime"
                         delay={0.2}
                     />
                     <FeatureCard
-                        icon="📊"
+                        icon=""
                         title="Advanced Analytics"
                         description="Comprehensive performance metrics and detailed uptime statistics"
                         delay={0.4}
                     />
                     <FeatureCard
-                        icon="🌍"
+                        icon=""
                         title="Global Coverage"
                         description="Monitor from multiple locations across the globe"
                         delay={0.6}
