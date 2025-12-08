@@ -48,18 +48,18 @@ export default class AuthController {
 
             if (token) {
                 if ( !tokens.login.has(String(token))) {
-                    return res.handler.badRequest(res, "Invalid or expired token");
+                    return res.redirect(`${req.allowedOrigin}/login?error=invalid or expired login token`);
                 }
 
                 const parsedToken = Token.fromToken(String(token));
                 if (!parsedToken || !parsedToken._id) {
-                    return res.handler.badRequest(res, "Invalid token");
+                    return res.redirect(`${req.allowedOrigin}/login?error=invalid or expired login token`);
                 }
 
 
                 const user = await res.models.User.findById(parsedToken._id);
                 if (!user || !user._id) {
-                    return res.handler.badRequest(res, "Invalid token");
+                    return res.redirect(`${req.allowedOrigin}/login?error=invalid or expired login token`);
                 }
 
                 if (!user.token || !Token.isTokenValid(user.token)) {
