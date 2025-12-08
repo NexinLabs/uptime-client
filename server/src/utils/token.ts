@@ -40,6 +40,15 @@ export class Token {
         }
     }
 
+    static isTokenValid(token: string): boolean {
+        try {
+            verify(token, appConfig.JWT_SECRET);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
     save() {
         return sign(this.toJSON(), appConfig.JWT_SECRET, { expiresIn: this.expireAt });
     }

@@ -62,7 +62,7 @@ export default class AuthController {
                     return res.handler.badRequest(res, "Invalid token");
                 }
 
-                if (!user.token) {
+                if (!user.token || !Token.isTokenValid(user.token)) {
                     const userToken = new Token({ _id: String(user._id), name: user.name });
                     user.token = userToken.save();
                     await user.save();
@@ -90,7 +90,7 @@ export default class AuthController {
                 return res.handler.unAuthorized(res, "Invalid email or password");
             }
 
-            if (!user.token) {
+            if (!user.token || !Token.isTokenValid(user.token)) {
                 const userToken = new Token({ _id: String(user._id), name: user.name });
                 user.token = userToken.save();
                 await user.save();

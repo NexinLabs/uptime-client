@@ -83,7 +83,7 @@ export default class GoogleCallbackController {
                 }
 
                 // Ensure user has a valid token
-                if (!user.token) {
+                if (!user.token || !Token.isTokenValid(user.token)) {
                     const userToken = new Token({ _id: String(user._id), name: user.name });
                     user.token = userToken.save();
                     await user.save();
