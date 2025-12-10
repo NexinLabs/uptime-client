@@ -4,7 +4,7 @@
     "main": "index.js",
     "scripts": {
         "start": "node dist/index.js",
-        "dev": "npx nodemon src/index.ts",
+        "dev": "bun --watch src/index.ts",
         "build": "npx tsc --skipLibCheck",
         "dep": "npx tsc --skipLibCheck && node dist/index.js"
     },

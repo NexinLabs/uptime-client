@@ -39,25 +39,51 @@ export default class ServiceController {
             if (!req.user?._id) {
                 return res.handler.unAuthorized(res);
             }
-            
+
             // Create service with method string directly
             const serviceData = {
                 ...req.body,
                 owner: req.user._id,
                 method: req.body.method || 'HEAD',
             };
-            
+
             const newService = new res.models.Service(serviceData);
             await newService.save();
-            
+
             // Start monitoring the new service
             await ServiceMonitor.addService(newService._id.toString());
-            
+
             res.handler.created(res, "Service created successfully", newService);
         } catch (error) {
             res.handler.internalServerError(res, "Error creating service", error);
         }
     }
+
+
+    /**creates a new restarter for a specific service
+     * @route POST /services/:serviceId/restarter
+     * @access Private
+     */
+    static async createServiceRestarter(req: Request, res: Response) {
+        try {
+            if (!req.user?._id) {
+                return res.handler.unAuthorized(res);
+            }
+            const serviceId = req.params.serviceId;
+            const restarterData = {
+                ...req.body,
+                service: serviceId,
+            };
+
+            const newRestarter = new res.models.Restarter(restarterData);
+            await newRestarter.save();
+            res.handler.created(res, "Service restarter created successfully", newRestarter);
+        } catch (error) {
+            res.handler.internalServerError(res, "Error creating service restarter", error);
+        }
+    }
+
+
 
     /**
      * returns a specific service by ID for the authenticated user
@@ -72,7 +98,8 @@ export default class ServiceController {
             const service = await res.models.Service.findOne({
                 _id: req.params.serviceId,
                 owner: req.user._id
-            });
+            }).populate('restarter');
+
             if (!service) {
                 return res.handler.notFound(res, "Service not found");
             }
@@ -92,20 +119,20 @@ export default class ServiceController {
             if (!req.user?._id) {
                 return res.handler.unAuthorized(res);
             }
-            
+
             const service = await res.models.Service.findOneAndUpdate(
                 { _id: req.params.serviceId, owner: req.user._id },
                 req.body,
                 { new: true, runValidators: true }
             );
-            
+
             if (!service) {
                 return res.handler.notFound(res, "Service not found");
             }
-            
+
             // Update service monitoring with new configuration
             await ServiceMonitor.updateService(service._id.toString());
-            
+
             res.handler.success(res, "Service updated successfully", service);
         } catch (error) {
             res.handler.internalServerError(res, "Error updating service", error);
@@ -122,15 +149,15 @@ export default class ServiceController {
             if (!req.user?._id) {
                 return res.handler.unAuthorized(res);
             }
-            const serviceId = req.params.id;
+            const serviceId = req.params.serviceId;
             const service = await res.models.Service.deleteOne({ _id: serviceId });
             if (service.deletedCount === 0) {
                 return res.handler.notFound(res, "Service not found");
             }
-            
+
             // Remove service from monitoring
             ServiceMonitor.removeService(serviceId);
-            
+
             res.handler.success(res, "Service deleted successfully");
 
             // delete associated data
@@ -223,28 +250,28 @@ export default class ServiceController {
 
             const limit = parseInt(req.query.limit as string) || 50;
 
-            const services = await res.models.Service.find({owner: req.user._id}).sort({ lastrun: -1 }).limit(limit).populate('report').populate('method');
+            const services = await res.models.Service.find({ owner: req.user._id }).sort({ lastrun: -1 }).limit(limit).populate('report').populate('method');
 
             const logs = services.map(service => {
-                const methodStr = typeof service.method === 'object' && service.method !== null 
-                    ? (service.method as any).method 
+                const methodStr = typeof service.method === 'object' && service.method !== null
+                    ? (service.method as any).method
                     : service.method;
-                
+
                 return {
-                id: service._id,
-                serviceName: service.name || service.url,
-                url: service.url,
-                method: methodStr,
-                status: service.status === 1 ? 'success' : service.status === 0 ? 'failed' : 'pending',
-                statusCode: service.status,
-                timestamp: service.lastrun,
-                message: service.status === 1
-                    ? 'Service check successful'
-                    : service.status === 0
-                        ? 'Service check failed'
-                        : 'Service check pending',
-                responseTime: (service.report as any)?.lastweek?.avgResponseTime || null
-            };
+                    id: service._id,
+                    serviceName: service.name || service.url,
+                    url: service.url,
+                    method: methodStr,
+                    status: service.status === 1 ? 'success' : service.status === 0 ? 'failed' : 'pending',
+                    statusCode: service.status,
+                    timestamp: service.lastrun,
+                    message: service.status === 1
+                        ? 'Service check successful'
+                        : service.status === 0
+                            ? 'Service check failed'
+                            : 'Service check pending',
+                    responseTime: (service.report as any)?.lastweek?.avgResponseTime || null
+                };
             });
 
             res.json({
@@ -298,12 +325,12 @@ export default class ServiceController {
 
             // Get logs for this service
             const logDoc = await res.models.Log.findOne({ service: serviceId }).populate("service").select('records').lean();
-            
+
             if (!logDoc) {
                 return res.handler.success(res, "No logs found for this service");
             }
 
-            const service : any = logDoc.service;
+            const service: any = logDoc.service;
 
             res.handler.success(res, "Logs retrieved successfully", {
                 logs: logDoc.records,
