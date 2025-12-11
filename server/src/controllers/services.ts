@@ -1,11 +1,16 @@
 import { Request, Response } from "express";
 import ServiceMonitor from "@/utils/services/monitor";
-import { IService } from "@/models/service.model";
+import type { IService } from "@/models/service.model";
+
+interface AllServiceCache{
+    createdAt: number;
+    service: IService[];
+}  
 
 
 export default class ServiceController {
-
-
+    private static serviceCache = new Map<string, AllServiceCache>();
+    private static statsCache = new Map<string, any>();
 
     /**
      * returns all available services listed by the user
@@ -18,10 +23,21 @@ export default class ServiceController {
                 return res.handler.unAuthorized(res);
             }
 
+            const now = Date.now();
+            const cacheServices = ServiceController.serviceCache.get(req.user._id.toString());
+            if (cacheServices && (now - cacheServices.createdAt) < 30000) {
+                return res.handler.success(res, "Services retrieved successfully (from cache)", cacheServices.service);
+            }
+
             const services = await res.models.Service.find({
                 owner: req.user._id
             }).lean();
 
+            // Update cache
+            ServiceController.serviceCache.set(req.user._id.toString(), {
+                createdAt: now,
+                service: services as any
+            });
 
             res.handler.success(res, "Services retrieved successfully", services);
         } catch (error) {
@@ -98,7 +114,7 @@ export default class ServiceController {
             const service = await res.models.Service.findOne({
                 _id: req.params.serviceId,
                 owner: req.user._id
-            }).populate('restarter');
+            }).populate('restarter log');
 
             if (!service) {
                 return res.handler.notFound(res, "Service not found");
@@ -180,6 +196,12 @@ export default class ServiceController {
                 return res.handler.unAuthorized(res);
             }
 
+            const now = Date.now();
+            const cacheStats = ServiceController.statsCache.get(req.user._id.toString());
+            if (cacheStats && (now - cacheStats.createdAt) < 30000) {
+                return res.handler.success(res, "Overview stats retrieved successfully (from cache)", cacheStats.stats);
+            }
+
             const services = await res.models.Service.find({
                 owner: req.user._id
             }).populate('report').populate('method');
@@ -230,6 +252,12 @@ export default class ServiceController {
                 incidents,
                 status: incidents === 0 ? 'OPERATIONAL' : incidents < 3 ? 'DEGRADED' : 'OUTAGE'
             };
+
+            // Update cache
+            ServiceController.statsCache.set(req.user._id.toString(), {
+                createdAt: now,
+                stats: overview
+            });
 
             res.json(overview);
         } catch (error) {
@@ -324,7 +352,7 @@ export default class ServiceController {
             const limit = parseInt(req.query.limit as string) || 100;
 
             // Get logs for this service
-            const logDoc = await res.models.Log.findOne({ service: serviceId }).populate("service").select('records').lean();
+            const logDoc = await res.models.Log.findOne({ service: serviceId }).populate("service").select('records pings').lean();
 
             if (!logDoc) {
                 return res.handler.success(res, "No logs found for this service");
@@ -333,7 +361,7 @@ export default class ServiceController {
             const service: any = logDoc.service;
 
             res.handler.success(res, "Logs retrieved successfully", {
-                logs: logDoc.records,
+                logs: logDoc.records.slice(-limit),
                 total: logDoc.records.length,
                 serviceName: service.name || service.url,
                 serviceUrl: service.url
