@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { authAPI, userAPI } from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -43,11 +43,7 @@ const ProfilePage = () => {
     });
     const [notificationLoading, setNotificationLoading] = useState(false);
 
-    useEffect(() => {
-        fetchUserProfile();
-    });
-
-    const fetchUserProfile = async () => {
+    const fetchUserProfile = useCallback(async () => {
         try {
             setLoading(true);
             const authResponse = await authAPI.authenticate();
@@ -73,7 +69,11 @@ const ProfilePage = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [navigate, toast]);
+
+    useEffect(() => {
+        fetchUserProfile();
+    }, [fetchUserProfile]);
 
     const handlePasswordUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
