@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { authAPI, userAPI } from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -43,37 +43,37 @@ const ProfilePage = () => {
     });
     const [notificationLoading, setNotificationLoading] = useState(false);
 
-    const fetchUserProfile = useCallback(async () => {
-        try {
-            setLoading(true);
-            const authResponse = await authAPI.authenticate();
-            const authData: any = authResponse.data;
-
-            if (authData?._id) {
-                const profileResponse = await userAPI.getProfile(authData._id);
-                const profileData = profileResponse.data as UserProfile;
-                setUser(profileData);
-                setNotifications(profileData.notification || { email: false, sms: false, push: false });
-            }
-        } catch (error: any) {
-            console.error("Error fetching profile:", error);
-            toast({
-                title: "Error",
-                description: "Failed to load profile. Please try again.",
-                variant: "destructive",
-            });
-            navigate("/login", {
-                state: { from: "/profile" },
-                replace: true,
-            });
-        } finally {
-            setLoading(false);
-        }
-    }, [navigate, toast]);
-
     useEffect(() => {
+        const fetchUserProfile = async () => {
+            try {
+                setLoading(true);
+                const authResponse = await authAPI.authenticate();
+                const authData: any = authResponse.data;
+
+                if (authData?._id) {
+                    const profileResponse = await userAPI.getProfile(authData._id);
+                    const profileData = profileResponse.data as UserProfile;
+                    setUser(profileData);
+                    setNotifications(profileData.notification || { email: false, sms: false, push: false });
+                }
+            } catch (error: any) {
+                console.error("Error fetching profile:", error);
+                toast({
+                    title: "Error",
+                    description: "Failed to load profile. Please try again.",
+                    variant: "destructive",
+                });
+                navigate("/login", {
+                    state: { from: "/profile" },
+                    replace: true,
+                });
+            } finally {
+                setLoading(false);
+            }
+        };
+
         fetchUserProfile();
-    }, [fetchUserProfile]);
+    }, []);
 
     const handlePasswordUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
