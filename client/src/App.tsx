@@ -3,7 +3,6 @@ import { lazy, Suspense } from 'react'
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import ThemeProvider from '@/components/theme-provider'
 import AuthProvider from '@/components/auth-provider'
-import ProtectedRoute from '@/components/ProtectedRoute'
 
 const LandingPage = lazy(async () => import('@/pages/info/LandingPage'))
 const Dashboard = lazy(async () => import('@/pages/util/Dashboard'))
@@ -39,39 +38,25 @@ function App() {
                 <Suspense fallback={<LoadingFallback />}>
                     <Routes>
                         {/* Protected Dashboard Route */}
-                        <Route
-                            path='/dashboard/*'
-                            element={
-                                <ProtectedRoute>
-                                    <Dashboard />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path='/profile'
-                            element={
-                                <ProtectedRoute>
-                                    <ProfilePage />
-                                </ProtectedRoute>
-                            }
-                        />
+                        <Route path='/dashboard/*' element={<Dashboard />} />
+                        <Route path='/profile' element={<ProfilePage />} />
 
                         {/* Public Routes with Theme Provider */}
                         <Route path='/*' element={<ThemeProvider />}>
-                            <Route index element={<LandingPage />}></Route>
-                            <Route path='login' element={<LoginPage />}></Route>
-                            <Route path='signup' element={<SignUpPage />}></Route>
-                            <Route path='verify' element={<VerifyAccPage />}></Route>
-                            <Route path='forgot-password' element={<ForgotPassPage />}></Route>
-                            <Route path='reset-password' element={<ResetPassPage />}></Route>
-                            <Route path='about' element={<AboutPage />}></Route>
-                            <Route path='pricing' element={<PricingPage />}></Route>
-                            <Route path='contact' element={<ContactPage />}></Route>
-                            <Route path='privacy' element={<PrivacyPage />}></Route>
-                            <Route path='terms' element={<TermsPage />}></Route>
-                            <Route path='security' element={<SecurityPage />}></Route>
-                            <Route path='cookies' element={<CookiesPage />}></Route>
-                            <Route path='*' element={<NotFoundPage />}></Route>
+                            <Route index element={<LandingPage />} />
+                            <Route path='login' element={<LoginPage />} />
+                            <Route path='signup' element={<SignUpPage />} />
+                            <Route path='verify' element={<VerifyAccPage />} />
+                            <Route path='forgot-password' element={<ForgotPassPage />} />
+                            <Route path='reset-password' element={<ResetPassPage />} />
+                            <Route path='about' element={<AboutPage />} />
+                            <Route path='pricing' element={<PricingPage />} />
+                            <Route path='contact' element={<ContactPage />} />
+                            <Route path='privacy' element={<PrivacyPage />} />
+                            <Route path='terms' element={<TermsPage />} />
+                            <Route path='security' element={<SecurityPage />} />
+                            <Route path='cookies' element={<CookiesPage />} />
+                            <Route path='*' element={<NotFoundPage />} />
                         </Route>
                     </Routes>
                 </Suspense>
