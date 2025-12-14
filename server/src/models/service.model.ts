@@ -1,3 +1,4 @@
+import { ILog , Log as LogModel} from './logs.model';
 import mongoose, { Schema, Document } from 'mongoose';
 
 
@@ -16,6 +17,7 @@ export interface IService extends Document {
     delay: number;  // time delay to next check in seconds
     lastrun: Date;
     endpoints: string[];
+    log: ILog;
 }
 
 const ServiceSchema: Schema = new Schema({
@@ -32,8 +34,25 @@ const ServiceSchema: Schema = new Schema({
     body: { type: Schema.Types.Mixed, default: {}, },
     lastrun: { type: Date, default: Date.now, },
     endpoints: { type: [String], default: [], },
+    log: { type: Schema.Types.ObjectId, ref: 'Log', required: false, default: null, },
 }, {
     timestamps: true,
 });
 
 export const Service = mongoose.model<IService>('Service', ServiceSchema);
+
+
+// create a log when service is saved
+ServiceSchema.pre('save', function (next) {
+    if(!this.log){
+        const _log = new LogModel({
+            user: this.owner,
+            service: this._id,
+        });
+        _log.save();
+        this.log = _log._id;
+    }
+    next();
+})
+
+ServiceSchema

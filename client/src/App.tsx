@@ -13,6 +13,7 @@ const VerifyAccPage = lazy(async () => import('@/pages/info/auth/VerifyAccPage')
 const ForgotPassPage = lazy(async () => import('@/pages/info/auth/ForgotPassPage'))
 const ResetPassPage = lazy(async () => import('@/pages/info/auth/ResetPasswordPage'))
 const AboutPage = lazy(async () => import('@/pages/info/misc/AboutPage'))
+const ServiceDetailsPage = lazy(async () => import('@/pages/util/ServiceDetailsPage'))
 const PricingPage = lazy(async () => import('@/pages/info/misc/PricingPage'))
 const ContactPage = lazy(async () => import('@/pages/info/misc/ContactPage'))
 const NotFoundPage = lazy(async () => import('@/pages/info/misc/NotFoundPage'))
@@ -38,7 +39,8 @@ function App() {
                 <Suspense fallback={<LoadingFallback />}>
                     <Routes>
                         {/* Protected Dashboard Route */}
-                        <Route path='/dashboard/*' element={<Dashboard />} />
+                        <Route path='/dashboard' element={<Dashboard />} />
+                        <Route path='/dashboard/:id' element={<ServiceDetailsPage />} />
                         <Route path='/profile' element={<ProfilePage />} />
 
                         {/* Public Routes with Theme Provider */}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { authAPI, userAPI } from "@/lib/api";
+import { userAPI } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,7 +24,7 @@ const ProfilePage = () => {
     const { toast } = useToast();
 
     const [user, setUser] = useState<UserProfile | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     // Password state
     const [currentPassword, setCurrentPassword] = useState("");
@@ -47,28 +47,17 @@ const ProfilePage = () => {
         const fetchUserProfile = async () => {
             try {
                 setLoading(true);
-                const authResponse = await authAPI.authenticate();
-                const authData: any = authResponse.data;
-
-                if (authData?._id) {
-                    const profileResponse = await userAPI.getProfile(authData._id);
-                    const profileData = profileResponse.data as UserProfile;
-                    setUser(profileData);
-                    setNotifications(profileData.notification || { email: false, sms: false, push: false });
-                }
+                const profileResponse = await userAPI.getProfile();
+                const profileData = profileResponse.data as UserProfile;
+                setUser(profileData);
+                setNotifications(profileData.notification || { email: false, sms: false, push: false });
+                setLoading(false);
             } catch (error: any) {
                 console.error("Error fetching profile:", error);
-                toast({
-                    title: "Error",
-                    description: "Failed to load profile. Please try again.",
-                    variant: "destructive",
-                });
                 navigate("/login", {
                     state: { from: "/profile" },
                     replace: true,
                 });
-            } finally {
-                setLoading(false);
             }
         };
 
@@ -100,7 +89,7 @@ const ProfilePage = () => {
 
         try {
             setPasswordLoading(true);
-            await userAPI.updatePassword(user._id, currentPassword, newPassword);
+            await userAPI.updatePassword(currentPassword, newPassword);
             toast({
                 title: "Success",
                 description: "Password updated successfully.",
@@ -124,7 +113,7 @@ const ProfilePage = () => {
 
         try {
             setNotificationLoading(true);
-            await userAPI.updateNotification(user._id, notifications);
+            await userAPI.updateNotification(notifications);
             toast({
                 title: "Success",
                 description: "Notification preferences updated.",

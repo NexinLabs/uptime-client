@@ -151,18 +151,18 @@ export const servicesAPI = {
 
 // User API functions
 export const userAPI = {
-    getProfile: (userId: string) =>
-        apiClient.get(`/user/${userId}`),
+    getProfile: () =>
+        apiClient.get(`/user`),
 
-    updateNotification: (userId: string, notification: { email: boolean; sms: boolean; push: boolean }) =>
-        apiClient.put(`/user/${userId}/notification`, notification),
+    updateNotification: (notification: { email: boolean; sms: boolean; push: boolean }) =>
+        apiClient.put(`/user/notification`, notification),
 
-    updatePassword: (userId: string, currentPassword: string, newPassword: string) =>
-        apiClient.put(`/user/${userId}/password`, { currentPassword, newPassword }),
+    updatePassword: (currentPassword: string, newPassword: string) =>
+        apiClient.put(`/user/password`, { currentPassword, newPassword }),
 
-    updateAvatar: (userId: string, avatar: string) =>
-        apiClient.put(`/user/${userId}/avatar`, { avatar }),
+    updateAvatar: (avatar: string) =>
+        apiClient.put(`/user/avatar`, { avatar }),
 
-    deleteAccount: (userId: string) =>
-        apiClient.delete(`/user/${userId}`),
+    deleteAccount: () =>
+        apiClient.delete(`/user`),
 };
