@@ -41,7 +41,7 @@ jobs:
           context: ./server
           push: true
           tags: |
-            ghcr.io/${{ env.REPO_LOWER }}-server:latest
+            ghcr.io/${{ env.REPO_LOWER }}-backend:latest
 
   build-client:
     runs-on: ubuntu-latest
@@ -68,4 +68,4 @@ jobs:
           context: ./client
           push: true
           tags: |
-            ghcr.io/${{ env.REPO_LOWER }}-client:latest
+            ghcr.io/${{ env.REPO_LOWER }}-frontend:latest

@@ -85,7 +85,7 @@ export default class ServiceController {
             if (!req.user?._id) {
                 return res.handler.unAuthorized(res);
             }
-            const serviceId = req.params.serviceId;
+            const serviceId = req.params.serviceId as string;
             const restarterData = {
                 ...req.body,
                 service: serviceId,
@@ -112,7 +112,7 @@ export default class ServiceController {
                 return res.handler.unAuthorized(res);
             }
             const service = await res.models.Service.findOne({
-                _id: req.params.serviceId,
+                _id: req.params.serviceId as string,
                 owner: req.user._id
             }).populate('restarter log');
 
@@ -137,7 +137,7 @@ export default class ServiceController {
             }
 
             const service = await res.models.Service.findOneAndUpdate(
-                { _id: req.params.serviceId, owner: req.user._id },
+                { _id: req.params.serviceId as string, owner: req.user._id },
                 req.body,
                 { new: true, runValidators: true }
             );
@@ -165,7 +165,7 @@ export default class ServiceController {
             if (!req.user?._id) {
                 return res.handler.unAuthorized(res);
             }
-            const serviceId = req.params.serviceId;
+            const serviceId = req.params.serviceId as string;
             const service = await res.models.Service.deleteOne({ _id: serviceId });
             if (service.deletedCount === 0) {
                 return res.handler.notFound(res, "Service not found");
@@ -348,7 +348,7 @@ export default class ServiceController {
                 return res.handler.unAuthorized(res);
             }
 
-            const serviceId = req.params.serviceId;
+            const serviceId = req.params.serviceId as string;
             const limit = parseInt(req.query.limit as string) || 100;
 
             // Get logs for this service
