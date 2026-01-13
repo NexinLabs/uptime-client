@@ -1,27 +1,20 @@
-# Use Node.js for building the app
-FROM node:20-alpine AS build
+# Use Bun for building the app
+FROM oven/bun:alpine AS build
 
 # Set working directory
 WORKDIR /app
 
-# Set environment variables to fix esbuild issues
-ENV NODE_OPTIONS="--max-old-space-size=4096"
-ENV ESBUILD_BINARY_PATH=/usr/local/bin/esbuild
-
 # Copy package files
-COPY package*.json ./
+COPY package.json bun.lock ./
 
-# Clean npm cache and remove any existing node_modules to avoid optional dependency issues
-RUN npm cache clean --force && rm -rf node_modules package-lock.json
-
-# Install dependencies
-RUN npm install
+# Install dependencies using Bun
+RUN bun install --frozen-lockfile
 
 # Copy source code
 COPY . .
 
-# Build the app
-RUN npm run build
+# Build the app using Bun
+RUN bun run build
 
 # Use nginx to serve the built app
 FROM nginx:alpine
